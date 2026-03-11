@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  background: #08111e;
+}
+
+body {
+  @apply m-0 min-h-screen bg-ink text-slate-100 font-display;
+  background-image:
+    radial-gradient(circle at top right, rgba(248, 184, 78, 0.16), transparent 30%),
+    radial-gradient(circle at left center, rgba(50, 198, 183, 0.12), transparent 28%),
+    linear-gradient(180deg, #08111e 0%, #0b1524 42%, #0f1b2d 100%);
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+::selection {
+  background: rgba(255, 107, 87, 0.3);
+}
+
+@keyframes war-map-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+
+@keyframes milestone-flash {
+  0% {
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes teal-confirm {
+  0% {
+    box-shadow: 0 0 0 rgba(50, 198, 183, 0);
+  }
+
+  25% {
+    box-shadow: 0 0 0 1px rgba(50, 198, 183, 0.55), 0 0 28px rgba(50, 198, 183, 0.18);
+  }
+
+  100% {
+    box-shadow: 0 0 0 rgba(50, 198, 183, 0);
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-3xl border border-line/80 bg-panel/85 shadow-panel backdrop-blur;
+  }
+
+  .panel-soft {
+    @apply rounded-2xl border border-line/70 bg-white/5 backdrop-blur;
+  }
+
+  .pill {
+    @apply inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-mist;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-line bg-ink/60 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-coral focus:ring-2 focus:ring-coral/25;
+  }
+
+  .button-primary {
+    @apply inline-flex items-center justify-center rounded-2xl bg-coral px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110;
+  }
+
+  .button-secondary {
+    @apply inline-flex items-center justify-center rounded-2xl border border-line bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-amber/40 hover:bg-white/10;
+  }
+}
+
+@layer utilities {
+  .pixelated {
+    image-rendering: pixelated;
+  }
+
+  .animate-war-node {
+    animation: war-map-pulse 2.2s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  .animate-milestone-flash {
+    animation: milestone-flash 0.55s ease-out forwards;
+  }
+
+  .animate-teal-confirm {
+    animation: teal-confirm 0.85s ease-out;
+  }
+}

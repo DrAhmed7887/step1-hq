@@ -1,0 +1,237 @@
+{
+  "resources": [
+    {
+      "id": "pathoma-1-3",
+      "name": "Pathoma Chapters 1-3",
+      "category": "content",
+      "priority": 1,
+      "startWeek": 1,
+      "endWeek": 2,
+      "estimatedHours": 9,
+      "prerequisite": null,
+      "notes": "Universally cited as highest-yield. ~8.5 hours at 1x speed. Watch at 1.5-2x. Re-watch once more in final 2 weeks before exam.",
+      "evidenceStrength": "strong",
+      "source": "20+ IMG write-ups consistently cite chapters 1-3 as core"
+    },
+    {
+      "id": "uworld-start",
+      "name": "UWorld (Begin First Pass)",
+      "category": "questions",
+      "priority": 1,
+      "startWeek": 1,
+      "endWeek": 16,
+      "estimatedHours": 300,
+      "prerequisite": null,
+      "notes": "START IMMEDIATELY. Do NOT wait until after content review. Begin system-wise in tutor mode, 20-40 questions/day alongside videos. Multiple IMGs who delayed UWorld regretted it. One said 'doing FA alone is a mistake — you need questions from day 1'.",
+      "evidenceStrength": "strong",
+      "source": "Universal consensus across all write-ups"
+    },
+    {
+      "id": "video-series",
+      "name": "Primary Video Series (B&B OR Bootcamp — pick ONE)",
+      "category": "content",
+      "priority": 1,
+      "startWeek": 1,
+      "endWeek": 10,
+      "estimatedHours": 120,
+      "prerequisite": null,
+      "notes": "If foundation is weak, use Bootcamp (more detailed). If foundation is okay, use B&B (more concise). Do NOT use both. Watch at 1.5-2x speed. One UK IMG finished all B&B in ~1 month at 1.5-2x. Pair each system's videos with same-system UWorld questions immediately after.",
+      "evidenceStrength": "moderate",
+      "source": "Community split but consensus is pick ONE video series"
+    },
+    {
+      "id": "first-aid",
+      "name": "First Aid (Core Study Spine)",
+      "category": "content",
+      "priority": 1,
+      "startWeek": 1,
+      "endWeek": 26,
+      "estimatedHours": 200,
+      "prerequisite": null,
+      "notes": "FA is the structural backbone of every serious USMLE study plan. It is NOT optional. Use it as the organizing spine — each day's study is anchored to specific FA page ranges by system. First pass: read FA section for each system alongside video lectures and UWorld questions for that system. Second pass: review weak sections identified by NBME analysis. Rapid Review section (pages 670-688) in the final week before exam. Total: 636 pages across 17 sections. Do NOT read cover-to-cover passively — always pair with active questions. Annotate sparingly — one color for UWorld pearls, one for personal weak points. Edition: use latest available, but older editions (2023/2024) are adequate.",
+      "evidenceStrength": "strong",
+      "source": "Every structured study plan analyzed (7-mo, 8-mo, 9-mo, 1-yr variants) uses FA page numbers as the daily progress unit. Universal across all plan architectures."
+    },
+    {
+      "id": "sketchy-micro",
+      "name": "Sketchy Micro",
+      "category": "content",
+      "priority": 1,
+      "startWeek": 3,
+      "endWeek": 10,
+      "estimatedHours": 40,
+      "prerequisite": null,
+      "notes": "Called 'gold' by multiple IMGs. Non-negotiable. Pair with AnKing Sketchy Micro tags in Anki. One IMG took ~2 months watching 2-3 videos/day.",
+      "evidenceStrength": "strong",
+      "source": "Universal agreement that Sketchy Micro is essential"
+    },
+    {
+      "id": "sketchy-pharm",
+      "name": "Sketchy Pharm",
+      "category": "content",
+      "priority": 2,
+      "startWeek": 5,
+      "endWeek": 14,
+      "estimatedHours": 50,
+      "prerequisite": "sketchy-micro",
+      "notes": "Highly recommended but some IMGs use Pixorize instead. Longer than Micro (~30 min per video). 4-6 weeks if doing many per day. Pair with AnKing Pharm tags. Some IMGs called Sketchy Pharm the 'worst of the 3' but still useful.",
+      "evidenceStrength": "moderate",
+      "source": "Most IMGs use it; some substitute Pixorize"
+    },
+    {
+      "id": "sketchy-path",
+      "name": "Sketchy Path",
+      "category": "content",
+      "priority": 3,
+      "startWeek": null,
+      "endWeek": null,
+      "estimatedHours": 30,
+      "prerequisite": "sketchy-micro",
+      "notes": "OPTIONAL. Most IMGs skip this. Consensus: Micro=must, Pharm=recommended, Path=optional. Only do if you have surplus time.",
+      "evidenceStrength": "weak",
+      "source": "Multiple IMGs say it's least useful"
+    },
+    {
+      "id": "anki-anking",
+      "name": "Anki (AnKing Deck with UWorld + Sketchy tags)",
+      "category": "spaced-repetition",
+      "priority": 1,
+      "startWeek": 1,
+      "endWeek": 24,
+      "estimatedHours": 0,
+      "prerequisite": null,
+      "notes": "Start Day 1. Use AnKing deck filtered by: Sketchy Micro tags, Sketchy Pharm tags, and UWorld tags. Do NOT unsuspend the entire deck. Working IMGs: 50-80 new cards/day max. Reviews will pile to 300-500/day at peak. Stop adding NEW cards 1-2 weeks before exam. Focus final weeks on reviews only. One IMG said 'AnKing with UWorld tags is the best use'.",
+      "evidenceStrength": "strong",
+      "source": "Consistent across all Anki-using IMGs"
+    },
+    {
+      "id": "pathoma-full",
+      "name": "Pathoma (Full - Chapters 4+)",
+      "category": "content",
+      "priority": 2,
+      "startWeek": 3,
+      "endWeek": 12,
+      "estimatedHours": 17,
+      "prerequisite": "pathoma-1-3",
+      "notes": "Watch once at 1.5-2x alongside the relevant system in your video series. Total Pathoma is ~25 hours at 1x. System chapters are lower yield than 1-3 but still worth one pass. Integrate with FA pathology sections.",
+      "evidenceStrength": "moderate",
+      "source": "Most IMGs watch once, don't re-watch system chapters"
+    },
+    {
+      "id": "uworld-second-pass",
+      "name": "UWorld Second Pass (Incorrects + Flagged)",
+      "category": "questions",
+      "priority": 1,
+      "startWeek": 16,
+      "endWeek": 22,
+      "estimatedHours": 80,
+      "prerequisite": "uworld-start",
+      "notes": "After completing first pass, do all incorrect + flagged questions. One IMG did ~1300 questions in second pass and raised accuracy from 40% to 60%. Some IMGs do full reset if time permits, but incorrects-only is the minimum. Do in random timed mode.",
+      "evidenceStrength": "strong",
+      "source": "Most successful IMGs do a second pass"
+    },
+    {
+      "id": "nbme-first",
+      "name": "First NBME (Baseline)",
+      "category": "assessment",
+      "priority": 1,
+      "startWeek": 12,
+      "endWeek": 14,
+      "estimatedHours": 4,
+      "prerequisite": null,
+      "notes": "Take FIRST NBME once UWorld is 50%+ complete. DO NOT take earlier — low scores before sufficient prep cause demoralization without useful data. Use an older form (25 or 26) as baseline. Expect 50-60% on first attempt. This is NORMAL for IMGs. One IMG scored 46% on first NBME and eventually passed.",
+      "evidenceStrength": "strong",
+      "source": "Multiple IMGs regret taking NBMEs too late OR too early"
+    },
+    {
+      "id": "nbme-series",
+      "name": "NBME Series (Weekly in Final 6-8 Weeks)",
+      "category": "assessment",
+      "priority": 1,
+      "startWeek": 18,
+      "endWeek": 25,
+      "estimatedHours": 30,
+      "prerequisite": "nbme-first",
+      "notes": "Take NBMEs 25-31 roughly weekly. Newer forms (25-31) reflect current content. After each NBME: spend 2-3 days analyzing every question. Categorize misses into 'knowledge gaps', 'trick questions', and 'carelessness'. Map misses to systems and use that to drive next week's UWorld blocks. Target: mid-60s to 70%+ on multiple forms before sitting for exam.",
+      "evidenceStrength": "strong",
+      "source": "Universal recommendation; one IMG took 25-33 weekly"
+    },
+    {
+      "id": "free-120",
+      "name": "Free 120 (New Version)",
+      "category": "assessment",
+      "priority": 1,
+      "startWeek": 24,
+      "endWeek": 25,
+      "estimatedHours": 4,
+      "prerequisite": "nbme-series",
+      "notes": "Take 3-7 days before exam under Prometric-like conditions. One IMG said the new Free 120 felt 'incredibly representative of the real deal'. Target: 70%+. This is your final readiness check.",
+      "evidenceStrength": "strong",
+      "source": "Consistent recommendation; new Free 120 highly valued"
+    },
+    {
+      "id": "dirty-medicine",
+      "name": "Dirty Medicine / Randy Neil (Biochem, Ethics, Biostats)",
+      "category": "supplement",
+      "priority": 3,
+      "startWeek": 16,
+      "endWeek": 25,
+      "estimatedHours": 15,
+      "prerequisite": null,
+      "notes": "OPTIONAL but frequently cited as helpful for specific topics: biochemistry pathways, inheritance patterns, ethics, biostats. Watch at 1.5x on low-energy days or during commute. One IMG: 'Dirty medicine for biochem is gold if you supplement with Mehlman PDF'. NOT a replacement for core resources.",
+      "evidenceStrength": "moderate",
+      "source": "Cited by ~40% of IMG write-ups as helpful supplement"
+    },
+    {
+      "id": "divine-intervention",
+      "name": "Divine Intervention Podcast",
+      "category": "supplement",
+      "priority": 3,
+      "startWeek": 12,
+      "endWeek": 25,
+      "estimatedHours": 20,
+      "prerequisite": null,
+      "notes": "Passive review during commute/exercise. One IMG listened to ~180 episodes on biochem/ethics topics. Good for low-energy days when active study isn't possible. Not mandatory.",
+      "evidenceStrength": "weak",
+      "source": "Cited by some IMGs; useful for passive review"
+    }
+  ],
+  "gatingRules": [
+    {
+      "id": "uworld-gate",
+      "condition": "uworld_percent_complete < 50",
+      "blocks": "nbme-first",
+      "message": "Complete at least 50% of UWorld before your first NBME. Taking it earlier risks demoralization without useful data."
+    },
+    {
+      "id": "resource-overload-gate",
+      "condition": "active_resources_count > 3",
+      "blocks": "any_new_resource",
+      "message": "You have more than 3 active resources. Every IMG who failed cited resource overload. Pause one before adding another."
+    },
+    {
+      "id": "nbme-spacing-gate",
+      "condition": "days_since_last_nbme < 5",
+      "blocks": "nbme-series",
+      "message": "Wait at least 5 days between NBMEs. You need time to analyze mistakes and remediate, not just test repeatedly."
+    },
+    {
+      "id": "fa-engagement-check",
+      "condition": "weeks_active('first-aid') >= 3 AND fa_pages_completed < 50",
+      "blocks": null,
+      "warning": "You've been studying for 3+ weeks but completed fewer than 50 FA pages. FA works best when read actively alongside UWorld — try pairing each FA section with matching UWorld questions instead of reading alone."
+    },
+    {
+      "id": "anki-new-cards-gate",
+      "condition": "weeks_until_exam <= 2 AND anki_new_cards_per_day > 0",
+      "blocks": null,
+      "warning": "Stop adding new Anki cards. Final 2 weeks should be reviews only. Protect what you already know."
+    },
+    {
+      "id": "free120-gate",
+      "condition": "weeks_until_exam > 1 AND weeks_until_exam <= 2",
+      "recommends": "free-120",
+      "message": "Take the new Free 120 this week under exam-like conditions. This is your final readiness check."
+    }
+  ]
+}

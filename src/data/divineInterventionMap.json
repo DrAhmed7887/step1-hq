@@ -1,0 +1,25 @@
+{
+  "step1Episodes": {
+    "Biochemistry": ["Ep 11", "Ep 13", "Ep 15", "Ep 50", "Ep 51", "Ep 56", "Ep 57", "Ep 64", "Ep 138"],
+    "Immunology": ["Ep 14", "Ep 136", "Ep 173", "Ep 279", "Ep 323"],
+    "Microbiology": ["Ep 2", "Ep 3", "Ep 7", "Ep 12", "Ep 16", "Ep 27", "Ep 28", "Ep 33", "Ep 34"],
+    "Pathology": ["Ep 481"],
+    "Pharmacology": ["Ep 6", "Ep 8", "Ep 10", "Ep 14", "Ep 18", "Ep 20", "Ep 25", "Ep 27", "Ep 28"],
+    "Public Health Sciences": ["Ep 123", "Ep 132", "Ep 143", "Ep 337", "Ep 363", "Ep 364", "Ep 383", "Ep 458", "Ep 530"],
+    "Cardiovascular": ["Ep 5", "Ep 55", "Ep 61", "Ep 63", "Ep 116", "Ep 154", "Ep 165", "Ep 171", "Ep 172"],
+    "Endocrine": ["Ep 152", "Ep 301"],
+    "Gastrointestinal": ["Ep 135", "Ep 170", "Ep 175"],
+    "Hematology/Oncology": ["Ep 163", "Ep 178", "Ep 194", "Ep 199"],
+    "Neurology": ["Ep 133", "Ep 150", "Ep 183", "Ep 185", "Ep 192", "Ep 193"],
+    "Renal": ["Ep 134", "Ep 153", "Ep 181"],
+    "Respiratory": ["Ep 129", "Ep 168", "Ep 421"],
+    "Reproductive": ["Ep 179", "Ep 200"]
+  },
+  "mustListenEpisodes": [
+    { "episode": "Ep 400", "title": "Psychological Aspects of Doing Well on Test Day", "when": "1 week before exam", "note": "Cited as 'must-listen' for managing test-day anxiety and cognitive stamina" },
+    { "episode": "Ep 498", "title": "The Successful Dedicated Period Part 1", "when": "Start of dedicated period", "note": "Framework for structuring the final study push" },
+    { "episode": "Ep 499", "title": "The Successful Dedicated Period Part 2", "when": "Start of dedicated period", "note": "Continuation of dedicated period framework" },
+    { "episode": "Ep 469", "title": "Why Are My Practice Test Scores Not Improving?", "when": "When NBME scores plateau", "note": "Troubleshooting plateaus — surface this when user shows flat NBME scores" }
+  ],
+  "usage": "When the coaching engine generates a daily plan for a zero-day or minimum-viable-day, recommend 1-2 Divine Intervention episodes matching the user's current system. When NBME scores plateau, recommend Ep 469. In the final week, recommend Ep 400."
+}

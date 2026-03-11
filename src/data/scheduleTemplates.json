@@ -1,0 +1,122 @@
+{
+  "templates": [
+    {
+      "id": "zero-day",
+      "hoursAvailable": [0, 0.5],
+      "label": "Survival Mode",
+      "description": "Protect the streak. Don't break momentum.",
+      "tasks": [
+        { "action": "Anki reviews ONLY (no new cards)", "minutes": 15, "priority": 1 },
+        { "action": "Listen to 1 Divine Intervention episode passively", "minutes": 15, "priority": 2 }
+      ],
+      "rules": [
+        "No new content. No guilt.",
+        "If even 15 minutes is impossible, that's okay. Rest counts.",
+        "Do NOT open UWorld — you'll feel bad about not finishing a block."
+      ]
+    },
+    {
+      "id": "minimum-viable",
+      "hoursAvailable": [1, 1.5],
+      "label": "Minimum Viable Day",
+      "description": "One small win. Keep the chain alive.",
+      "tasks": [
+        { "action": "Anki reviews (clear backlog)", "minutes": 20, "priority": 1 },
+        { "action": "1 UWorld block (10-20 Qs, tutor mode)", "minutes": 30, "priority": 1 },
+        { "action": "Review weak topic in FA (10 pages max)", "minutes": 10, "priority": 2 }
+      ],
+      "rules": [
+        "Quality over quantity. 20 reviewed questions > 40 rushed ones.",
+        "Pick the system you're weakest in for the UWorld block.",
+        "Skip videos today — they need sustained attention you don't have."
+      ]
+    },
+    {
+      "id": "normal-day",
+      "hoursAvailable": [2, 3],
+      "label": "Standard Training",
+      "description": "This is the bread and butter. Most of your progress happens here.",
+      "tasks": [
+        { "action": "Anki reviews + new cards (50-80 new max)", "minutes": 30, "priority": 1 },
+        { "action": "UWorld block 1 (40 Qs, system-based or mixed)", "minutes": 60, "priority": 1 },
+        { "action": "Review UWorld explanations (incorrects + flagged)", "minutes": 30, "priority": 1 },
+        { "action": "FA review of today's weak system OR 1 video lecture", "minutes": 30, "priority": 2 }
+      ],
+      "rules": [
+        "UWorld is the main event. Everything else supports it.",
+        "If behind on Anki reviews (>300 pending), skip new cards and clear reviews first.",
+        "Alternate between system-based and random blocks based on prep phase."
+      ]
+    },
+    {
+      "id": "strong-day",
+      "hoursAvailable": [4, 5],
+      "label": "Attack Day",
+      "description": "Push hard. This is where scores move.",
+      "tasks": [
+        { "action": "Anki reviews + new cards", "minutes": 40, "priority": 1 },
+        { "action": "UWorld block 1 (40 Qs, timed)", "minutes": 60, "priority": 1 },
+        { "action": "UWorld block 2 (40 Qs, mixed/random)", "minutes": 60, "priority": 1 },
+        { "action": "Review all incorrects from both blocks", "minutes": 40, "priority": 1 },
+        { "action": "Video lecture OR FA pass on weak system", "minutes": 40, "priority": 2 },
+        { "action": "Sketchy video if in micro/pharm phase", "minutes": 20, "priority": 2 }
+      ],
+      "rules": [
+        "80 questions is the target today. Don't exceed 100 — diminishing returns.",
+        "Take a 10-minute break between blocks. Walk, stretch, hydrate.",
+        "If this is a weekend, consider doing an NBME instead of two UWorld blocks."
+      ]
+    },
+    {
+      "id": "marathon-day",
+      "hoursAvailable": [6, 10],
+      "label": "Full Send",
+      "description": "Maximum output. Usually weekends or days off.",
+      "tasks": [
+        { "action": "Anki reviews (clear ALL pending)", "minutes": 45, "priority": 1 },
+        { "action": "UWorld block 1 (40 Qs, timed random)", "minutes": 60, "priority": 1 },
+        { "action": "Review block 1", "minutes": 30, "priority": 1 },
+        { "action": "Break (15 min walk/food)", "minutes": 15, "priority": 1 },
+        { "action": "UWorld block 2 (40 Qs, timed random)", "minutes": 60, "priority": 1 },
+        { "action": "Review block 2", "minutes": 30, "priority": 1 },
+        { "action": "Lunch break", "minutes": 30, "priority": 1 },
+        { "action": "Video lectures (2-3 lectures on weak system)", "minutes": 60, "priority": 2 },
+        { "action": "FA pass (same system as videos)", "minutes": 30, "priority": 2 },
+        { "action": "Sketchy video + Anki new cards for that topic", "minutes": 30, "priority": 2 },
+        { "action": "UWorld block 3 if energy permits (40 Qs)", "minutes": 60, "priority": 3 }
+      ],
+      "rules": [
+        "100-120 questions is the ceiling. Beyond that, retention drops.",
+        "Take REAL breaks — not phone-scrolling breaks.",
+        "If it's NBME week, replace UWorld blocks 1-2 with a full NBME + 3-hour review.",
+        "Stop by 10pm regardless. Sleep is non-negotiable."
+      ]
+    }
+  ],
+  "phaseModifiers": {
+    "content_phase": {
+      "weeks": [1, 10],
+      "emphasis": "Video lectures + FA + system-based UWorld (tutor mode)",
+      "uworldMode": "system-based, tutor",
+      "ankiStrategy": "Add new cards from Sketchy + current system"
+    },
+    "training_phase": {
+      "weeks": [11, 18],
+      "emphasis": "UWorld volume + transition to random timed blocks",
+      "uworldMode": "mixed, transitioning to random timed",
+      "ankiStrategy": "Focus on UWorld incorrect cards, reduce new adds"
+    },
+    "assessment_phase": {
+      "weeks": [19, 24],
+      "emphasis": "NBMEs weekly + UWorld incorrects + targeted remediation",
+      "uworldMode": "random timed + incorrects second pass",
+      "ankiStrategy": "Reviews only in final 2 weeks, no new cards"
+    },
+    "final_week": {
+      "weeks": [25, 26],
+      "emphasis": "Free 120 + rapid FA/Pathoma 1-3 review + rest",
+      "uworldMode": "light review of flagged only",
+      "ankiStrategy": "Mature card reviews only. Suspend low-yield tags."
+    }
+  }
+}

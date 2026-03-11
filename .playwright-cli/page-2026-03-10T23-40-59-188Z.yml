@@ -1,0 +1,21 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Standalone Vite build
+        - generic [ref=e9]:
+          - heading "USMLE Step 1 War Room with a physician-parent command surface." [level=1] [ref=e10]
+          - paragraph [ref=e11]: Local-first, routed, offline-capable, and designed around constrained study blocks rather than generic med-school schedules.
+      - generic [ref=e12]:
+        - link "Study engine War Room Topics, missed questions, NBME readiness, AI quiz tooling." [ref=e13] [cursor=pointer]:
+          - /url: /war-room
+          - generic [ref=e14]: Study engine
+          - generic [ref=e15]: War Room
+          - generic [ref=e16]: Topics, missed questions, NBME readiness, AI quiz tooling.
+        - link "Life ops Command Center Schedule, tasks, goals, notes, and focus blocks." [ref=e17] [cursor=pointer]:
+          - /url: /command-center
+          - generic [ref=e18]: Life ops
+          - generic [ref=e19]: Command Center
+          - generic [ref=e20]: Schedule, tasks, goals, notes, and focus blocks.
+  - main [ref=e21]:
+    - generic [ref=e22]: Loading page…

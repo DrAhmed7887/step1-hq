@@ -1,0 +1,239 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Standalone Vite build
+        - generic [ref=e9]:
+          - heading "USMLE Step 1 War Room with a physician-parent command surface." [level=1] [ref=e10]
+          - paragraph [ref=e11]: Local-first, routed, offline-capable, and designed around constrained study blocks rather than generic med-school schedules.
+      - generic [ref=e12]:
+        - link "Study engine War Room Topics, missed questions, NBME readiness, AI quiz tooling." [ref=e13] [cursor=pointer]:
+          - /url: /war-room
+          - generic [ref=e14]: Study engine
+          - generic [ref=e15]: War Room
+          - generic [ref=e16]: Topics, missed questions, NBME readiness, AI quiz tooling.
+        - link "Life ops Command Center Schedule, tasks, goals, notes, and focus blocks." [ref=e17] [cursor=pointer]:
+          - /url: /command-center
+          - generic [ref=e18]: Life ops
+          - generic [ref=e19]: Command Center
+          - generic [ref=e20]: Schedule, tasks, goals, notes, and focus blocks.
+  - main [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - paragraph [ref=e27]: Command Center
+            - heading "Protect family time and keep the schedule real." [level=2] [ref=e28]
+            - paragraph [ref=e29]: "This page replaces the missing `command-center.jsx` artifact with the features described in the repo notes: quick add, today view, weekly grid, goals, notes, and a longer-block focus timer."
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - paragraph [ref=e32]: Open tasks
+              - paragraph [ref=e33]: "2"
+            - generic [ref=e34]:
+              - paragraph [ref=e35]: Today's events
+              - paragraph [ref=e36]: "2"
+            - generic [ref=e37]:
+              - paragraph [ref=e38]: Goals active
+              - paragraph [ref=e39]: "4"
+            - generic [ref=e40]:
+              - paragraph [ref=e41]: Logged study hours
+              - paragraph [ref=e42]: "0"
+        - generic [ref=e43]:
+          - paragraph [ref=e44]: Energy map
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - generic [ref=e47]:
+                - generic [ref=e48]: morning
+                - generic [ref=e49]: 4/5
+              - slider [ref=e50]: "4"
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - generic [ref=e53]: afternoon
+                - generic [ref=e54]: 2/5
+              - slider [ref=e55]: "2"
+            - generic [ref=e56]:
+              - generic [ref=e57]:
+                - generic [ref=e58]: evening
+                - generic [ref=e59]: 3/5
+              - slider [ref=e60]: "3"
+          - generic [ref=e61]:
+            - checkbox "Family-first mode" [checked] [ref=e62]
+            - text: Family-first mode
+      - generic [ref=e63]:
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - paragraph [ref=e66]: Today
+            - heading "Tasks and calendar in one place" [level=2] [ref=e67]
+            - paragraph [ref=e68]: Recurring family and study blocks are expanded into today's agenda.
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - generic [ref=e71]:
+                - paragraph [ref=e72]: Morning study block
+                - paragraph [ref=e73]: Study
+              - paragraph [ref=e74]: 05:30 - 07:30
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - paragraph [ref=e77]: Emma gymnastics
+                - paragraph [ref=e78]: Family
+              - paragraph [ref=e79]: 16:00 - 18:30
+          - generic [ref=e80]:
+            - button "Book Free 120 Prometric simulation Study · high 2026-03-11" [ref=e81] [cursor=pointer]:
+              - generic [ref=e82]:
+                - paragraph [ref=e83]: Book Free 120 Prometric simulation
+                - paragraph [ref=e84]: Study · high
+              - generic [ref=e85]: 2026-03-11
+            - button "Collect homologacion documents Spain · medium anytime" [ref=e86] [cursor=pointer]:
+              - generic [ref=e87]:
+                - paragraph [ref=e88]: Collect homologacion documents
+                - paragraph [ref=e89]: Spain · medium
+              - generic [ref=e90]: anytime
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: Quick add
+            - heading "Capture while the context is fresh" [level=2] [ref=e94]
+            - paragraph [ref=e95]: The goal is to stop switching tools for calendar and to-do capture.
+          - generic [ref=e96]:
+            - textbox "New to-do" [ref=e97]
+            - generic [ref=e98]:
+              - combobox [ref=e99]:
+                - option "Study" [selected]
+                - option "Family"
+                - option "Spain"
+                - option "Admin"
+              - combobox [ref=e100]:
+                - option "high"
+                - option "medium" [selected]
+                - option "low"
+              - textbox [ref=e101]: 2026-03-11
+            - button "Add task" [ref=e102] [cursor=pointer]
+          - generic [ref=e103]:
+            - textbox "New event" [ref=e104]
+            - generic [ref=e105]:
+              - combobox [ref=e106]:
+                - option "Study" [selected]
+                - option "Family"
+                - option "Clinic"
+                - option "Admin"
+              - textbox [ref=e107]: 2026-03-11
+              - textbox [ref=e108]: 08:00
+              - textbox [ref=e109]: 09:00
+            - textbox "Notes" [ref=e110]
+            - button "Add event" [ref=e111] [cursor=pointer]
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - paragraph [ref=e115]: Weekly view
+            - heading "One week, one glance" [level=2] [ref=e116]
+            - paragraph [ref=e117]: Recurring blocks are surfaced so the study plan is constrained by reality instead of wishful scheduling.
+          - generic [ref=e118]:
+            - article [ref=e119]:
+              - paragraph [ref=e120]: 2026-03-11
+              - paragraph [ref=e121]: Wednesday
+              - generic [ref=e122]:
+                - paragraph [ref=e123]: 2 event(s)
+                - paragraph [ref=e124]: 1 task(s)
+                - generic [ref=e125]: Morning study block
+                - generic [ref=e126]: Emma gymnastics
+            - article [ref=e127]:
+              - paragraph [ref=e128]: 2026-03-12
+              - paragraph [ref=e129]: Thursday
+              - generic [ref=e130]:
+                - paragraph [ref=e131]: 1 event(s)
+                - paragraph [ref=e132]: 0 task(s)
+                - generic [ref=e133]: Morning study block
+            - article [ref=e134]:
+              - paragraph [ref=e135]: 2026-03-13
+              - paragraph [ref=e136]: Friday
+              - generic [ref=e137]:
+                - paragraph [ref=e138]: 1 event(s)
+                - paragraph [ref=e139]: 0 task(s)
+                - generic [ref=e140]: Morning study block
+            - article [ref=e141]:
+              - paragraph [ref=e142]: 2026-03-14
+              - paragraph [ref=e143]: Saturday
+              - generic [ref=e144]:
+                - paragraph [ref=e145]: 2 event(s)
+                - paragraph [ref=e146]: 0 task(s)
+                - generic [ref=e147]: Morning study block
+                - generic [ref=e148]: Emma gymnastics
+            - article [ref=e149]:
+              - paragraph [ref=e150]: 2026-03-15
+              - paragraph [ref=e151]: Sunday
+              - generic [ref=e152]:
+                - paragraph [ref=e153]: 1 event(s)
+                - paragraph [ref=e154]: 0 task(s)
+                - generic [ref=e155]: Morning study block
+            - article [ref=e156]:
+              - paragraph [ref=e157]: 2026-03-16
+              - paragraph [ref=e158]: Monday
+              - generic [ref=e159]:
+                - paragraph [ref=e160]: 2 event(s)
+                - paragraph [ref=e161]: 0 task(s)
+                - generic [ref=e162]: Morning study block
+                - generic [ref=e163]: Emma gymnastics
+            - article [ref=e164]:
+              - paragraph [ref=e165]: 2026-03-17
+              - paragraph [ref=e166]: Tuesday
+              - generic [ref=e167]:
+                - paragraph [ref=e168]: 1 event(s)
+                - paragraph [ref=e169]: 0 task(s)
+                - generic [ref=e170]: Morning study block
+        - generic [ref=e171]:
+          - generic [ref=e172]:
+            - generic [ref=e173]:
+              - paragraph [ref=e174]: Pomodoro
+              - heading "Deep work" [level=2] [ref=e175]
+              - paragraph [ref=e176]: Use longer focus blocks. This is tuned for physician schedules, not generic 25-minute sprints.
+            - paragraph [ref=e178]: 50:00
+            - generic [ref=e179]:
+              - button "Start" [ref=e180] [cursor=pointer]
+              - button "Switch mode" [ref=e181] [cursor=pointer]
+          - generic [ref=e182]:
+            - generic [ref=e183]:
+              - paragraph [ref=e184]: Notes
+              - heading "Scratchpad" [level=2] [ref=e185]
+              - paragraph [ref=e186]: A local note field for the week's constraints, admin overhead, or next actions.
+            - textbox [ref=e187]: Keep weekday study inside 4.5 focused hours. Protect family evenings. Push PLAB 2 until Step 1 is done.
+            - button "Export JSON" [ref=e189] [cursor=pointer]
+      - generic [ref=e190]:
+        - generic [ref=e191]:
+          - paragraph [ref=e192]: Goals
+          - heading "Keep the long game visible" [level=2] [ref=e193]
+          - paragraph [ref=e194]: These milestones are editable, but they stay sequential so PLAB 2 does not compete with Step 1.
+        - generic [ref=e195]:
+          - article [ref=e196]:
+            - generic [ref=e197]:
+              - generic [ref=e198]:
+                - heading "USMLE Step 1" [level=3] [ref=e199]
+                - paragraph [ref=e200]: Deadline 2026-08-15
+              - generic [ref=e201]: 0%
+            - generic [ref=e203]:
+              - spinbutton [ref=e204]: "0"
+              - spinbutton [ref=e205]: "100"
+          - article [ref=e206]:
+            - generic [ref=e207]:
+              - generic [ref=e208]:
+                - heading "Spain NLV dossier" [level=3] [ref=e209]
+                - paragraph [ref=e210]: Deadline 2026-09-15
+              - generic [ref=e211]: 17%
+            - generic [ref=e214]:
+              - spinbutton [ref=e215]: "1"
+              - spinbutton [ref=e216]: "6"
+          - article [ref=e217]:
+            - generic [ref=e218]:
+              - generic [ref=e219]:
+                - heading "UC3M outreach" [level=3] [ref=e220]
+                - paragraph [ref=e221]: Deadline 2026-10-15
+              - generic [ref=e222]: 0%
+            - generic [ref=e224]:
+              - spinbutton [ref=e225]: "0"
+              - spinbutton [ref=e226]: "3"
+          - article [ref=e227]:
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - heading "PLAB 2" [level=3] [ref=e230]
+                - paragraph [ref=e231]: Deadline 2027-01-15
+              - generic [ref=e232]: 0%
+            - generic [ref=e234]:
+              - spinbutton [ref=e235]: "0"
+              - spinbutton [ref=e236]: "1"

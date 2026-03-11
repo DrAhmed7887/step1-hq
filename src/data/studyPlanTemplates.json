@@ -1,0 +1,68 @@
+{
+  "plans": {
+    "6-month": {
+      "totalDays": 180,
+      "phases": [
+        {
+          "name": "Foundation (Weeks 1-10)",
+          "weeks": [1, 10],
+          "systems": [
+            { "system": "Pathology (Pathoma 1-3)", "days": 4, "note": "Start here. Mechanisms of disease underpin everything." },
+            { "system": "Biochemistry", "days": 12, "note": "FA pp.33-94. Heaviest section. Pair with Pixorize for metabolic pathways." },
+            { "system": "Immunology", "days": 6, "note": "FA pp.95-122. Pair with Pixorize for immunodeficiencies." },
+            { "system": "Microbiology", "days": 14, "note": "FA pp.123-204. Largest section. Sketchy Micro is non-negotiable here." },
+            { "system": "Pharmacology", "days": 5, "note": "FA pp.227-249. Sketchy Pharm for antimicrobials/autonomic/anti-arrhythmics." },
+            { "system": "Public Health Sciences", "days": 3, "note": "FA pp.251-268. Ethics + Biostats. Randy Neil for biostats." }
+          ],
+          "uworldMode": "System-based, tutor mode, 20-40 questions/day",
+          "ankiMode": "50-80 new cards/day from Sketchy + current system tags",
+          "breakDays": "Every 7th day is a mandatory break or light review day"
+        },
+        {
+          "name": "Organ Systems (Weeks 11-18)",
+          "weeks": [11, 18],
+          "systems": [
+            { "system": "Cardiovascular", "days": 8, "note": "FA pp.274-317" },
+            { "system": "Respiratory", "days": 5, "note": "FA pp.642-668" },
+            { "system": "Renal", "days": 5, "note": "FA pp.561-592" },
+            { "system": "Gastrointestinal", "days": 7, "note": "FA pp.352-394" },
+            { "system": "Endocrine", "days": 5, "note": "FA pp.320-350" },
+            { "system": "Reproductive", "days": 7, "note": "FA pp.594-639" },
+            { "system": "Neurology", "days": 10, "note": "FA pp.474-535. Second heaviest section." },
+            { "system": "MSK/Skin/CT", "days": 6, "note": "FA pp.434-472" },
+            { "system": "Hematology/Oncology", "days": 7, "note": "FA pp.396-431" },
+            { "system": "Psychiatry", "days": 4, "note": "FA pp.538-560" }
+          ],
+          "uworldMode": "Transition to random timed blocks by week 14. Target 40-60 questions/day.",
+          "ankiMode": "Focus on UWorld incorrect cards. Reduce new adds.",
+          "breakDays": "Every 7th day"
+        },
+        {
+          "name": "Assessment & Remediation (Weeks 19-24)",
+          "weeks": [19, 24],
+          "focus": "NBMEs weekly. UWorld second pass (incorrects + flagged). Targeted system remediation based on NBME analysis. Mehlman PDFs. Ethics + Biostats deep dive.",
+          "uworldMode": "Random timed + incorrects second pass. 60-80 questions/day.",
+          "ankiMode": "Reviews only in final 2 weeks. No new cards.",
+          "nbmeSchedule": "One NBME every 7-10 days. Forms 25-31. Newer forms last."
+        },
+        {
+          "name": "Final Week (Weeks 25-26)",
+          "weeks": [25, 26],
+          "focus": "Free 120 (take at Prometric if possible). Re-watch Pathoma 1-3. Rapid Review (FA pp.670-688). Mehlman HY Arrows. Brain dump sheet practice. Sleep schedule alignment.",
+          "uworldMode": "Light review of flagged only. No new blocks.",
+          "ankiMode": "Mature card reviews only. Suspend low-yield tags.",
+          "nbmeSchedule": "Free 120 only. No more NBMEs."
+        }
+      ]
+    }
+  },
+  "systemCheckpoints": {
+    "description": "Every 4th study day within a system should be a review/checkpoint day (as per Marathoprint plan structure)",
+    "checkpointTasks": [
+      "Review weak FA pages from this system",
+      "Finish any pending UWorld questions for this system",
+      "Revise system-specific mistakes from UWorld",
+      "If Anki reviews for this system are piling up, clear them today"
+    ]
+  }
+}

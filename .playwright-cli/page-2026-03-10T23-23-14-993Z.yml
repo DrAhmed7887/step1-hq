@@ -1,0 +1,149 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Standalone Vite build
+        - generic [ref=e9]:
+          - heading "USMLE Step 1 War Room with a physician-parent command surface." [level=1] [ref=e10]
+          - paragraph [ref=e11]: Local-first, routed, offline-capable, and designed around constrained study blocks rather than generic med-school schedules.
+      - generic [ref=e12]:
+        - link "Study engine War Room Topics, missed questions, NBME readiness, AI quiz tooling." [ref=e13] [cursor=pointer]:
+          - /url: /war-room
+          - generic [ref=e14]: Study engine
+          - generic [ref=e15]: War Room
+          - generic [ref=e16]: Topics, missed questions, NBME readiness, AI quiz tooling.
+        - link "Life ops Command Center Schedule, tasks, goals, notes, and focus blocks." [ref=e17] [cursor=pointer]:
+          - /url: /command-center
+          - generic [ref=e18]: Life ops
+          - generic [ref=e19]: Command Center
+          - generic [ref=e20]: Schedule, tasks, goals, notes, and focus blocks.
+  - main [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - paragraph [ref=e27]: War Room
+            - heading "Track what matters, not just what is easy to count." [level=2] [ref=e28]
+            - paragraph [ref=e29]: The original artifact is now a routed local-first workspace with migrated storage, qualitative error tracking, NBME forecasting, and an AI quiz panel.
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - paragraph [ref=e32]: Days to exam
+              - generic [ref=e33]:
+                - paragraph [ref=e34]: "157"
+                - paragraph [ref=e35]: 2026-08-15
+            - generic [ref=e36]:
+              - paragraph [ref=e37]: UWorld completed
+              - generic [ref=e38]:
+                - paragraph [ref=e39]: "0"
+                - paragraph [ref=e40]: of 3400
+            - generic [ref=e41]:
+              - paragraph [ref=e42]: Overall accuracy
+              - generic [ref=e43]:
+                - paragraph [ref=e44]: 0%
+                - paragraph [ref=e45]: all logged blocks
+            - generic [ref=e46]:
+              - paragraph [ref=e47]: NBME readiness
+              - generic [ref=e48]:
+                - paragraph [ref=e49]: Watch
+                - paragraph [ref=e50]: avg 0%
+        - generic [ref=e51]:
+          - paragraph [ref=e52]: Seven-day cadence
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - generic [ref=e55]: "0"
+              - generic [ref=e57]: T
+            - generic [ref=e58]:
+              - generic [ref=e59]: "0"
+              - generic [ref=e61]: F
+            - generic [ref=e62]:
+              - generic [ref=e63]: "0"
+              - generic [ref=e65]: S
+            - generic [ref=e66]:
+              - generic [ref=e67]: "0"
+              - generic [ref=e69]: S
+            - generic [ref=e70]:
+              - generic [ref=e71]: "0"
+              - generic [ref=e73]: M
+            - generic [ref=e74]:
+              - generic [ref=e75]: "0"
+              - generic [ref=e77]: T
+            - generic [ref=e78]:
+              - generic [ref=e79]: "0"
+              - generic [ref=e81]: W
+      - generic [ref=e82]:
+        - button "Overview" [ref=e83] [cursor=pointer]
+        - button "FA Navigator" [ref=e84] [cursor=pointer]
+        - button "Problem List" [ref=e85] [cursor=pointer]
+        - button "Systems" [ref=e86] [cursor=pointer]
+        - button "NBME" [ref=e87] [cursor=pointer]
+        - button "AI Quiz" [ref=e88] [cursor=pointer]
+        - button "Settings" [ref=e89] [cursor=pointer]
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: Daily log
+            - heading "Minimal friction input" [level=2] [ref=e94]
+            - paragraph [ref=e95]: Use the same artifact flow, but save directly into local storage and push the selected system totals only when the block is real.
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - text: UWorld Qs
+              - spinbutton "UWorld Qs" [ref=e98]: "0"
+            - generic [ref=e99]:
+              - text: Correct
+              - spinbutton "Correct" [ref=e100]: "0"
+            - generic [ref=e101]:
+              - text: Hours
+              - spinbutton "Hours" [ref=e102]: "0"
+            - generic [ref=e103]:
+              - text: Anki cards
+              - spinbutton "Anki cards" [ref=e104]: "0"
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - text: System
+              - combobox "System" [ref=e107]:
+                - option "Select a system" [selected]
+                - option "🧬 Biochemistry"
+                - option "🛡️ Immunology"
+                - option "🦠 Microbiology"
+                - option "🔍 Pathology"
+                - option "💊 Pharmacology"
+                - option "📊 Pub Health / Biostats"
+                - option "♥ Cardiovascular"
+                - option "⚙️ Endocrine"
+                - option "⚡ Gastrointestinal"
+                - option "🩸 Heme / Onc"
+                - option "🦴 MSK / Skin / CT"
+                - option "🧠 Neurology"
+                - option "🧘 Psychiatry"
+                - option "💧 Renal"
+                - option "🔬 Reproductive"
+                - option "🫁 Respiratory"
+            - button "Apply to system totals" [ref=e108] [cursor=pointer]
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - paragraph [ref=e111]: Cognitive fatigue
+            - heading "Context matters" [level=2] [ref=e112]
+            - paragraph [ref=e113]: Older candidates are usually losing points to environment and energy, not raw effort. Track the context that lowers accuracy.
+          - generic [ref=e114]:
+            - generic [ref=e115]:
+              - generic [ref=e116]:
+                - text: Date
+                - textbox "Date" [ref=e117]: 2026-03-11
+              - generic [ref=e118]:
+                - text: Accuracy
+                - spinbutton "Accuracy" [ref=e119]
+            - generic [ref=e120]:
+              - text: Context
+              - textbox "Context" [ref=e121]: Uninterrupted 60-minute session
+            - generic [ref=e122]:
+              - generic [ref=e123]:
+                - text: Session type
+                - textbox "Session type" [ref=e124]: UWorld block
+              - generic [ref=e125]:
+                - text: Energy (1-5)
+                - spinbutton "Energy (1-5)" [ref=e126]: "3"
+            - textbox "Optional notes" [ref=e127]
+            - button "Add fatigue entry" [ref=e128] [cursor=pointer]
+          - generic [ref=e130]:
+            - generic [ref=e131]: No data yet
+            - generic [ref=e132]: log a block

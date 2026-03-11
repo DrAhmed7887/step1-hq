@@ -1,0 +1,18 @@
+[  794164ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/pages/WarRoomPage.jsx?t=1773185817226:0
+[  794165ms] [ERROR] [vite] Failed to reload /src/pages/WarRoomPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  794729ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/pages/WarRoomPage.jsx?t=1773185818537:0
+[  794729ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  796479ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/pages/WarRoomPage.jsx?t=1773185820333:0
+[  796479ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  894734ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/pages/CommandCenterPage.jsx?t=1773185918211:0
+[  894737ms] [ERROR] [vite] Failed to reload /src/pages/CommandCenterPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  915165ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  915871ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/pages/WarRoomPage.jsx?t=1773185939283:0
+[  918252ms] [ERROR] [vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  918710ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/pages/CommandCenterPage.jsx?t=1773185942415:0
+[  956091ms] Failed to fetch dynamically imported module: http://127.0.0.1:4174/src/pages/CommandCenterPage.jsx?t=1773185942415
+[  956044ms] [WARNING] %s
+
+%s
+ An error occurred in one of your React components. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=bf3511c9:6963

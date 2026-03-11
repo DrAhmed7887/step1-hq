@@ -1,0 +1,33 @@
+{
+  "totalPages": 636,
+  "sections": [
+    { "category": "General Principles", "system": "Biochemistry", "startPage": 33, "endPage": 94, "totalPages": 62, "estimatedDays": 8, "uworldTag": "biochemistry" },
+    { "category": "General Principles", "system": "Immunology", "startPage": 95, "endPage": 122, "totalPages": 28, "estimatedDays": 4, "uworldTag": "immunology" },
+    { "category": "General Principles", "system": "Microbiology", "startPage": 123, "endPage": 204, "totalPages": 82, "estimatedDays": 10, "uworldTag": "microbiology" },
+    { "category": "General Principles", "system": "Pathology", "startPage": 205, "endPage": 226, "totalPages": 22, "estimatedDays": 3, "uworldTag": "pathology" },
+    { "category": "General Principles", "system": "Pharmacology", "startPage": 227, "endPage": 249, "totalPages": 23, "estimatedDays": 3, "uworldTag": "pharmacology" },
+    { "category": "General Principles", "system": "Public Health Sciences", "startPage": 251, "endPage": 268, "totalPages": 18, "estimatedDays": 2, "uworldTag": "public-health" },
+    { "category": "Organ Systems", "system": "Cardiovascular", "startPage": 274, "endPage": 317, "totalPages": 44, "estimatedDays": 6, "uworldTag": "cardiovascular" },
+    { "category": "Organ Systems", "system": "Endocrine", "startPage": 320, "endPage": 350, "totalPages": 31, "estimatedDays": 4, "uworldTag": "endocrine" },
+    { "category": "Organ Systems", "system": "Gastrointestinal", "startPage": 352, "endPage": 394, "totalPages": 43, "estimatedDays": 5, "uworldTag": "gastrointestinal" },
+    { "category": "Organ Systems", "system": "Hematology/Oncology", "startPage": 396, "endPage": 431, "totalPages": 36, "estimatedDays": 5, "uworldTag": "heme-onc" },
+    { "category": "Organ Systems", "system": "MSK/Skin/Connective Tissue", "startPage": 434, "endPage": 472, "totalPages": 39, "estimatedDays": 5, "uworldTag": "msk-derm" },
+    { "category": "Organ Systems", "system": "Neurology", "startPage": 474, "endPage": 535, "totalPages": 62, "estimatedDays": 8, "uworldTag": "neurology" },
+    { "category": "Organ Systems", "system": "Psychiatry", "startPage": 538, "endPage": 560, "totalPages": 23, "estimatedDays": 3, "uworldTag": "psychiatry" },
+    { "category": "Organ Systems", "system": "Renal", "startPage": 561, "endPage": 592, "totalPages": 32, "estimatedDays": 4, "uworldTag": "renal" },
+    { "category": "Organ Systems", "system": "Reproductive", "startPage": 594, "endPage": 639, "totalPages": 46, "estimatedDays": 6, "uworldTag": "reproductive" },
+    { "category": "Organ Systems", "system": "Respiratory", "startPage": 642, "endPage": 668, "totalPages": 27, "estimatedDays": 4, "uworldTag": "respiratory" },
+    { "category": "Review", "system": "Rapid Review", "startPage": 670, "endPage": 688, "totalPages": 18, "estimatedDays": 2, "uworldTag": null }
+  ],
+  "recommendedOrder": {
+    "marathoprint": ["Pathology", "Biochemistry", "Immunology", "Microbiology", "Pharmacology", "Cardiovascular", "Respiratory", "Renal", "Gastrointestinal", "Endocrine", "Reproductive", "Neurology", "MSK/Skin/Connective Tissue", "Hematology/Oncology", "Psychiatry", "Public Health Sciences", "Rapid Review"],
+    "traditional": ["Biochemistry", "Immunology", "Microbiology", "Pathology", "Pharmacology", "Public Health Sciences", "Cardiovascular", "Endocrine", "Gastrointestinal", "Hematology/Oncology", "MSK/Skin/Connective Tissue", "Neurology", "Psychiatry", "Renal", "Reproductive", "Respiratory", "Rapid Review"],
+    "note": "Marathoprint order starts with Pathology (Pathoma 1-3) because these mechanisms underpin all subsequent systems. Traditional order follows FA page sequence. Both are valid. The coaching engine should let the user pick their order preference during onboarding."
+  },
+  "dailyPageTarget": {
+    "2-3_hours": 8,
+    "4-5_hours": 12,
+    "6+_hours": 18,
+    "note": "Pages per day when actively reading FA alongside videos + UWorld. These are NOT passive reading targets — they include time for annotation and cross-referencing."
+  }
+}

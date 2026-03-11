@@ -1,0 +1,42 @@
+[  641859ms] [ERROR] [vite] SyntaxError: Unexpected token ':' @ http://127.0.0.1:4174/@vite/client:808
+[  641864ms] [ERROR] [vite] Failed to reload /src/pages/CommandCenterPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  718476ms] [ERROR] [vite] SyntaxError: Unexpected token ':' @ http://127.0.0.1:4174/@vite/client:808
+[  718477ms] [ERROR] [vite] Failed to reload /src/pages/CommandCenterPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  728080ms] [ERROR] [vite] SyntaxError: Unexpected token ':' @ http://127.0.0.1:4174/@vite/client:808
+[  728082ms] [ERROR] [vite] Failed to reload /src/pages/CommandCenterPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[  740738ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://127.0.0.1:4174/src/lib/commandCenter.js?t=1773186799394:0
+[  740739ms] [ERROR] [vite] Failed to reload /src/pages/CommandCenterPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
+[10343592ms] [WARNING] The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://127.0.0.1:4174/node_modules/.vite/deps/recharts.js?v=74ee8952:6194
+[10343593ms] [WARNING] The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://127.0.0.1:4174/node_modules/.vite/deps/recharts.js?v=74ee8952:6194
+[10343598ms] [WARNING] The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://127.0.0.1:4174/node_modules/.vite/deps/recharts.js?v=74ee8952:6194
+[10343598ms] [WARNING] The width(0) and height(0) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width. @ http://127.0.0.1:4174/node_modules/.vite/deps/recharts.js?v=74ee8952:6194
+[13506889ms] ReferenceError: getNextResource is not defined
+    at prescribeTasks (http://127.0.0.1:4174/src/lib/coachingEngine.js?t=1773199565333:437:24)
+    at generateCoachingPlan (http://127.0.0.1:4174/src/lib/coachingEngine.js?t=1773199565333:862:17)
+    at http://127.0.0.1:4174/src/pages/CommandCenterPage.jsx?t=1773199565333:293:11
+    at updateMemo (http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=74ee8952:6543:21)
+    at Object.useMemo (http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=74ee8952:18967:20)
+    at exports.useMemo (http://127.0.0.1:4174/node_modules/.vite/deps/chunk-FONOKHZP.js?v=74ee8952:973:36)
+    at CommandCenterPage (http://127.0.0.1:4174/src/pages/CommandCenterPage.jsx?t=1773199565333:292:21)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=74ee8952:18507:20)
+    at renderWithHooks (http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=74ee8952:5652:24)
+    at updateFunctionComponent (http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=74ee8952:7473:21)
+[13506810ms] [WARNING] %s
+
+%s
+ An error occurred in the <CommandCenterPage> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:4174/node_modules/.vite/deps/react-dom_client.js?v=74ee8952:6963
+[17805725ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4174/src/components/CoachPanel.jsx?t=1773203864413:0
+[17805731ms] [ERROR] [vite] Failed to reload /src/components/CoachPanel.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://127.0.0.1:4174/@vite/client:808
