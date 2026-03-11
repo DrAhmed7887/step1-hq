@@ -88,7 +88,12 @@ function weekNodeStroke(week) {
   return "#2b3e55";
 }
 
-export default function WarMapPanel({ warRoomState, commandCenterState, momentum = 0 }) {
+export default function WarMapPanel({
+  warRoomState,
+  commandCenterState,
+  momentum = 0,
+  allowGrowthLog = true
+}) {
   const [view, setView] = useState("map");
   const weeks = buildWarMapWeeks({
     warRoomState,
@@ -101,6 +106,8 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
   const nodes = buildNodePoints(weeks);
   const path = buildSmoothPath(nodes);
 
+  const activeView = allowGrowthLog ? view : "map";
+
   return (
     <Card glow>
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -111,22 +118,24 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
             One path, four threads, and only real work. Quiet weeks stay visible. Active weeks keep the line lit.
           </p>
         </div>
-        <div className="segmented-shell">
-          <button
-            type="button"
-            onClick={() => setView("map")}
-            className={classNames("segmented-pill", view === "map" ? "active" : "")}
-          >
-            War Map
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("growth")}
-            className={classNames("segmented-pill", view === "growth" ? "active" : "")}
-          >
-            Growth Log
-          </button>
-        </div>
+        {allowGrowthLog ? (
+          <div className="segmented-shell">
+            <button
+              type="button"
+              onClick={() => setView("map")}
+              className={classNames("segmented-pill", view === "map" ? "active" : "")}
+            >
+              War Map
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("growth")}
+              className={classNames("segmented-pill", view === "growth" ? "active" : "")}
+            >
+              Growth Log
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-[1.4fr,0.9fr]">
@@ -154,7 +163,7 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
         </div>
       </div>
 
-      {view === "map" ? (
+      {activeView === "map" ? (
         <div className="mt-6 overflow-hidden rounded-[28px] border border-white/10 bg-black/20">
           <svg
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}

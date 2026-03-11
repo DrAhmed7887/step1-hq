@@ -2,8 +2,11 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import BottomNav from "./components/navigation/BottomNav";
 
+const HomePage = lazy(() => import("./pages/HomePage"));
+const PlanPage = lazy(() => import("./pages/PlanPage"));
 const WarRoomPage = lazy(() => import("./pages/WarRoomPage"));
-const CommandCenterPage = lazy(() => import("./pages/CommandCenterPage"));
+const MapPage = lazy(() => import("./pages/MapPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const ResourcesPage = lazy(() => import("./pages/ResourcesPage"));
 
 function Layout({ children }) {
@@ -26,11 +29,14 @@ function AnimatedRoutes() {
   return (
     <div key={location.pathname} className="page-fade">
       <Routes location={location}>
-        <Route path="/" element={<Navigate to="/command-center" replace />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/plan" element={<PlanPage />} />
         <Route path="/war-room" element={<WarRoomPage />} />
-        <Route path="/command-center" element={<CommandCenterPage />} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/command-center" element={<Navigate to="/" replace />} />
         <Route path="/resources" element={<ResourcesPage />} />
-        <Route path="*" element={<Navigate to="/command-center" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

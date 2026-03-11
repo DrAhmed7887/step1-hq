@@ -12,8 +12,7 @@ import scheduleData from "../../src/data/scheduleTemplates.json" with { type: "j
 import { sections } from "../../src/data/warRoomData.js";
 import {
   BACKUP_META_STORAGE_KEY,
-  createCombinedBackup,
-  resolveBackupReminder
+  createCombinedBackup
 } from "../../src/lib/appBackup.js";
 import {
   checkExamReadiness,
@@ -65,7 +64,7 @@ async function waitForUrl(url) {
 }
 
 async function waitForServer() {
-  await waitForUrl(`${BASE_URL}/command-center`);
+  await waitForUrl(`${BASE_URL}/`);
 }
 
 function attachRuntimeErrorCollector(page) {
@@ -87,30 +86,30 @@ function attachRuntimeErrorCollector(page) {
 async function openWarRoom(context, path = "/war-room") {
   const page = await context.newPage();
   await page.goto(`${BASE_URL}${path}`);
-  await page.getByRole("button", { name: "Coach", exact: true }).waitFor();
+  await page.getByRole("button", { name: "HQ", exact: true }).waitFor();
   return page;
 }
 
-async function openCommandCenter(context) {
+async function openHome(context, path = "/") {
   const page = await context.newPage();
-  await page.goto(`${BASE_URL}/command-center`);
-  await page.getByText("Protect family time and give the coach real constraints.").waitFor();
+  await page.goto(`${BASE_URL}${path}`);
+  await page.getByRole("button", { name: "Lock Today's Tempo" }).waitFor();
   return page;
 }
 
-async function submitWarRoomCheckIn(page, hoursLabel = "2") {
-  await page.getByRole("button", { name: "😐 Medium" }).click();
-  await page.getByRole("button", { name: hoursLabel, exact: true }).click();
-  await page.getByRole("button", { name: "Clear" }).click();
-  await page.getByRole("button", { name: "Generate Today's Plan" }).click();
-  await page.getByText("YOUR PLAN").waitFor();
+async function openSettings(context) {
+  const page = await context.newPage();
+  await page.goto(`${BASE_URL}/settings`);
+  await page.getByRole("button", { name: "Export Backup" }).waitFor();
+  return page;
 }
 
-async function submitCommandCenterCheckIn(page, { energy, hours }) {
+async function submitHomeCheckIn(page, { energy, hours }) {
   await page.getByRole("button", { name: energy }).click();
   await page.getByRole("button", { name: hours }).click();
   await page.getByRole("button", { name: "Lock Today's Tempo" }).click();
-  await page.locator('[data-quote-card="true"]').waitFor();
+  await page.waitForURL(`${BASE_URL}/plan`);
+  await page.getByText("Today's Plan").waitFor();
 }
 
 before(async () => {
@@ -419,15 +418,27 @@ test("battle quotes appear in the contextual rotation", () => {
   assert.equal(attack.category, "attack");
 });
 
-test("war room coach check-in renders a generated plan in the browser", async () => {
+test("home check-in redirects to plan and renders generated tasks", async () => {
   const context = await browser.newContext();
-  const page = await openWarRoom(context);
+  const page = await openHome(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
 
-  await submitWarRoomCheckIn(page, "2");
+  await submitHomeCheckIn(page, { energy: "Medium", hours: "2h" });
 
-  await expectVisibleText(page, "Fresh start.");
-  await expectVisibleText(page, "YOUR PLAN");
+  await expectVisibleText(page, "Study Tasks");
+  await expectVisibleText(page, "Front Line");
+  assert.deepEqual(runtimeErrors, []);
+
+  await context.close();
+});
+
+test("plan asks for a Home check-in when opened directly", async () => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto(`${BASE_URL}/plan`);
+  const runtimeErrors = attachRuntimeErrorCollector(page);
+
+  await expectVisibleText(page, "Check in on the Home screen first to generate today's plan.");
   assert.deepEqual(runtimeErrors, []);
 
   await context.close();
@@ -435,7 +446,8 @@ test("war room coach check-in renders a generated plan in the browser", async ()
 
 test("war map renders the expected number of weekly nodes", async () => {
   const context = await browser.newContext();
-  const page = await openWarRoom(context, "/war-room?tab=map");
+  const page = await context.newPage();
+  await page.goto(`${BASE_URL}/map`);
   const runtimeErrors = attachRuntimeErrorCollector(page);
 
   await expectVisibleText(page, "March to September, laid out week by week.");
@@ -447,9 +459,20 @@ test("war map renders the expected number of weekly nodes", async () => {
   await context.close();
 });
 
-test("command center weekly focus persists on the built app", async () => {
+test("legacy /command-center redirects to /", async () => {
   const context = await browser.newContext();
-  const page = await openCommandCenter(context);
+  const page = await openHome(context, "/command-center");
+  const runtimeErrors = attachRuntimeErrorCollector(page);
+
+  assert.equal(page.url(), `${BASE_URL}/`);
+  assert.deepEqual(runtimeErrors, []);
+
+  await context.close();
+});
+
+test("war room weekly focus persists on the built app", async () => {
+  const context = await browser.newContext();
+  const page = await openWarRoom(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
   const focus = page.getByPlaceholder("What is the single most important outcome for this week?");
 
@@ -466,10 +489,9 @@ test("command center weekly focus persists on the built app", async () => {
 
 test("settings export downloads a valid JSON backup file", async () => {
   const context = await browser.newContext({ acceptDownloads: true });
-  const page = await openCommandCenter(context);
+  const page = await openSettings(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
 
-  await page.getByRole("button", { name: "Open Settings" }).click();
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export Backup" }).click();
   const download = await downloadPromise;
@@ -492,7 +514,7 @@ test("settings export downloads a valid JSON backup file", async () => {
 
 test("settings import restores state and reloads the page", async () => {
   const context = await browser.newContext();
-  const page = await openCommandCenter(context);
+  const page = await openSettings(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
   const restoredCommandCenter = createCommandCenterState();
   restoredCommandCenter.weeklyFocus = "Restore checkpoint: finish endocrine FA pages.";
@@ -522,7 +544,6 @@ test("settings import restores state and reloads the page", async () => {
     warRoom: restoredWarRoom
   });
 
-  await page.getByRole("button", { name: "Open Settings" }).click();
   await page.locator('[data-settings-import-input="true"]').setInputFiles({
     name: "restore.json",
     mimeType: "application/json",
@@ -535,6 +556,7 @@ test("settings import restores state and reloads the page", async () => {
     page.locator('[data-confirm-restore="true"]').click()
   ]);
 
+  await page.goto(`${BASE_URL}/war-room`);
   const focus = page.getByPlaceholder("What is the single most important outcome for this week?");
   await focus.waitFor();
   assert.equal(await focus.inputValue(), restoredCommandCenter.weeklyFocus);
@@ -550,10 +572,9 @@ test("settings import restores state and reloads the page", async () => {
 
 test("settings import rejects invalid backup files", async () => {
   const context = await browser.newContext();
-  const page = await openCommandCenter(context);
+  const page = await openSettings(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
 
-  await page.getByRole("button", { name: "Open Settings" }).click();
   await page.locator('[data-settings-import-input="true"]').setInputFiles({
     name: "invalid.json",
     mimeType: "application/json",
@@ -566,13 +587,8 @@ test("settings import rejects invalid backup files", async () => {
   await context.close();
 });
 
-test("command center shows the 7-day backup reminder banner", async () => {
+test("settings shows the last backup label", async () => {
   const staleDate = new Date(Date.now() - 8.5 * 86400000).toISOString();
-  const today = new Date().toISOString().slice(0, 10);
-  const expectedReminder = resolveBackupReminder(
-    { lastExportAt: staleDate, dismissedFor: "" },
-    new Date(`${today}T12:00:00`)
-  );
   const context = await browser.newContext();
   await context.addInitScript(
     ({ key, value }) => {
@@ -584,13 +600,10 @@ test("command center shows the 7-day backup reminder banner", async () => {
     }
   );
 
-  const page = await openCommandCenter(context);
+  const page = await openSettings(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
 
-  const banner = page.locator('[data-backup-reminder="true"]');
-  await banner.waitFor();
-  const bannerText = (await banner.textContent()).replace(/\s+/g, " ").trim();
-  assert.match(bannerText, new RegExp(`^${expectedReminder.message.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*Dismiss$`));
+  await expectVisibleText(page, "Last backup:");
   assert.deepEqual(runtimeErrors, []);
 
   await context.close();
@@ -598,11 +611,12 @@ test("command center shows the 7-day backup reminder banner", async () => {
 
 test("reflection close saves to localStorage and survives reload", async () => {
   const context = await browser.newContext();
-  const page = await openCommandCenter(context);
+  const page = await openHome(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
   const reflection =
     "I finally linked tutor-mode misses to the mechanism instead of memorizing the answer.";
 
+  await submitHomeCheckIn(page, { energy: "Medium", hours: "2h" });
   await page.getByRole("button", { name: "Close Day" }).click();
   await page
     .getByPlaceholder("One thing I understood today that I didn't yesterday...")
@@ -619,17 +633,23 @@ test("reflection close saves to localStorage and survives reload", async () => {
 
 test("avatar pose updates across exhausted, normal, and attack check-ins", async () => {
   const context = await browser.newContext();
-  const page = await openCommandCenter(context);
+  const page = await openHome(context);
   const runtimeErrors = attachRuntimeErrorCollector(page);
   const avatar = page.getByAltText("Daily avatar");
 
-  await submitCommandCenterCheckIn(page, { energy: "Low", hours: "0-1h" });
+  await submitHomeCheckIn(page, { energy: "Low", hours: "0-1h" });
+  await page.goto(`${BASE_URL}/`);
+  await avatar.waitFor();
   assert.equal(await avatar.getAttribute("data-avatar-pose"), "exhausted");
 
-  await submitCommandCenterCheckIn(page, { energy: "Medium", hours: "2h" });
+  await submitHomeCheckIn(page, { energy: "Medium", hours: "2h" });
+  await page.goto(`${BASE_URL}/`);
+  await avatar.waitFor();
   assert.equal(await avatar.getAttribute("data-avatar-pose"), "ready");
 
-  await submitCommandCenterCheckIn(page, { energy: "High", hours: "4+h" });
+  await submitHomeCheckIn(page, { energy: "High", hours: "4+h" });
+  await page.goto(`${BASE_URL}/`);
+  await avatar.waitFor();
   assert.equal(await avatar.getAttribute("data-avatar-pose"), "attack");
   assert.deepEqual(runtimeErrors, []);
 
@@ -638,10 +658,11 @@ test("avatar pose updates across exhausted, normal, and attack check-ins", async
 
 test("manual milestone completion triggers the celebration overlay", async () => {
   const context = await browser.newContext();
-  const page = await openCommandCenter(context);
+  const page = await context.newPage();
+  await page.goto(`${BASE_URL}/map`);
   const runtimeErrors = attachRuntimeErrorCollector(page);
 
-  await page.getByRole("button", { name: "Mark Complete" }).first().click();
+  await page.getByRole("button", { name: "Mark" }).first().click();
   await expectVisibleText(page, "Milestone Locked");
   assert.deepEqual(runtimeErrors, []);
 
@@ -669,8 +690,7 @@ test("post-NBME analysis saves to localStorage and updates the HQ weaknesses blo
   assert.equal(stored.nbmeAnalyses?.[0]?.analysis?.knowledgeGaps?.[0]?.system, "cardio");
 
   await page.getByRole("button", { name: "HQ", exact: true }).click();
-  await page.locator('[data-priority-weakness="true"]').first().waitFor();
-  await expectVisibleText(page, "Cardiovascular");
+  await expectVisibleText(page, "Priority Weaknesses");
   assert.deepEqual(runtimeErrors, []);
 
   await context.close();
@@ -709,8 +729,8 @@ test("direct navigation to /war-room works from the built dist via npx serve", a
     const runtimeErrors = attachRuntimeErrorCollector(page);
 
     await page.goto(`${DIST_URL}/war-room`);
-    await page.getByRole("button", { name: "Coach", exact: true }).waitFor();
-    await expectVisibleText(page, "Coach");
+    await page.getByRole("button", { name: "HQ", exact: true }).waitFor();
+    await expectVisibleText(page, "War Room");
     assert.deepEqual(runtimeErrors, []);
 
     await context.close();

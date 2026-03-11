@@ -33,6 +33,7 @@ import {
 } from "../lib/cloudSync";
 import {
   COMMAND_CENTER_STORAGE_KEY,
+  TRACK_DEFINITIONS,
   createCommandCenterState,
   eventsForDate,
   hydrateCommandCenterState
@@ -42,7 +43,7 @@ import { createCombinedBackup, normalizeImportedBackup } from "../lib/appBackup"
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import WarMapPanel from "../components/journey/WarMapPanel";
 import Card from "../components/ui/Card";
-import CoachStatusPanel from "../components/war-room/CoachStatusPanel";
+import { THREAD_COLORS } from "../lib/journey";
 import { getLatestMomentum, getNewMilestones } from "../lib/journey";
 import {
   WAR_ROOM_STORAGE_KEY,
@@ -57,13 +58,11 @@ import {
 } from "../lib/warRoom";
 
 const tabs = [
-  { id: "coach", label: "Coach" },
   { id: "hq", label: "HQ" },
   { id: "systems", label: "Systems" },
   { id: "uworld", label: "UWorld" },
   { id: "nbmes", label: "NBMEs" },
-  { id: "incorrects", label: "Incorrects" },
-  { id: "map", label: "Map" }
+  { id: "incorrects", label: "Incorrects" }
 ];
 const TAB_IDS = tabs.map((entry) => entry.id);
 
@@ -316,7 +315,7 @@ export default function WarRoomPage() {
   );
   const [tab, setTab] = useState(() => {
     const requestedTab = searchParams.get("tab");
-    return TAB_IDS.includes(requestedTab) ? requestedTab : "coach";
+    return TAB_IDS.includes(requestedTab) ? requestedTab : "hq";
   });
   const [search, setSearch] = useState("");
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -543,7 +542,7 @@ export default function WarRoomPage() {
     setTab(nextTab);
     const nextParams = new URLSearchParams(searchParams);
 
-    if (nextTab === "coach") {
+    if (nextTab === "hq") {
       nextParams.delete("tab");
     } else {
       nextParams.set("tab", nextTab);
@@ -559,6 +558,14 @@ export default function WarRoomPage() {
         ...current,
         ...resolved
       };
+    });
+  }
+
+  function patchCommandCenter(next) {
+    const resolved = typeof next === "function" ? next(commandCenterSnapshot) : next;
+    writeStorageJson(COMMAND_CENTER_STORAGE_KEY, {
+      ...commandCenterSnapshot,
+      ...resolved
     });
   }
 
@@ -1440,7 +1447,7 @@ Critically review the MCQ:
     const nextMoveDetail =
       coachPlan.nextBestMove?.recommendation?.notes ||
       coachPlan.nextBestMove?.gates?.[0]?.message ||
-      "Setup daily plan in Command Center.";
+      "Lock today on Home, then execute the next block.";
 
     return (
       <div className="mx-auto max-w-4xl space-y-6">
@@ -1535,6 +1542,67 @@ Critically review the MCQ:
             </div>
           </Card>
         </div>
+
+        <Card variant="calm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-calm">Mission Frame</p>
+              <h2 className="mt-2 text-2xl font-bold text-white">Keep the surface clean.</h2>
+            </div>
+            <p className="text-sm text-slate-400">{TRACK_DEFINITIONS.length} tracks active</p>
+          </div>
+
+          <div className="mt-5 grid gap-5">
+            <div>
+              <label className="text-[11px] uppercase tracking-[0.2em] text-mist" htmlFor="weekly-focus">
+                Weekly Focus
+              </label>
+              <input
+                id="weekly-focus"
+                className="field mt-3"
+                placeholder="What is the single most important outcome for this week?"
+                value={commandCenterSnapshot.weeklyFocus}
+                onChange={(event) =>
+                  patchCommandCenter({
+                    weeklyFocus: event.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="text-[11px] uppercase tracking-[0.2em] text-mist" htmlFor="command-notes">
+                Command Notes
+              </label>
+              <textarea
+                id="command-notes"
+                className="field mt-3 min-h-32"
+                value={commandCenterSnapshot.notes}
+                onChange={(event) =>
+                  patchCommandCenter({
+                    notes: event.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {TRACK_DEFINITIONS.map((track) => {
+                const trackTodos = commandCenterSnapshot.todos.filter(
+                  (todo) => todo.linkedTrackIds?.includes(track.id) && todo.status !== "done"
+                ).length;
+
+                return (
+                  <div key={track.id} className="panel-soft">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-mist">{track.id}</p>
+                    <p className="mt-2 text-lg font-semibold text-white">{track.shortLabel}</p>
+                    <p className="mt-1 text-sm text-slate-300">{trackTodos} open tasks</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
       </div>
     );
   };
@@ -1970,7 +2038,7 @@ Critically review the MCQ:
   );
 
   const renderToolsPanels = () => (
-    <div className="grid gap-6 xl:grid-cols-[0.9fr,1.1fr]">
+    <div className="space-y-6">
       <section className="panel p-5 sm:p-6">
         <SectionTitle
           eyebrow="Incorrects"
@@ -1996,86 +2064,6 @@ Critically review the MCQ:
           <p className={`text-sm ${ankiSyncStatus.tone}`}>{ankiSyncStatus.message}</p>
         </form>
       </section>
-
-      <section className="panel p-5 sm:p-6">
-        <SectionTitle
-          eyebrow="Cloud"
-          title="Remote snapshot"
-          body="Optional Supabase Edge sync for cross-device copies. Local backup/export stays the primary safety net."
-        />
-        <div className="mt-5 space-y-4">
-          <div>
-            <label className="mb-1 block text-xs uppercase text-mist" htmlFor="cloud-project-url">
-              Project URL
-            </label>
-            <input
-              id="cloud-project-url"
-              className="field"
-              value={cloudSettings.projectUrl}
-              onChange={(event) =>
-                setCloudSettings((current) => ({
-                  ...current,
-                  projectUrl: event.target.value
-                }))
-              }
-              placeholder="https://your-project.supabase.co"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs uppercase text-mist" htmlFor="cloud-anon-key">
-              Anon Key
-            </label>
-            <input
-              id="cloud-anon-key"
-              className="field"
-              value={cloudSettings.anonKey}
-              onChange={(event) =>
-                setCloudSettings((current) => ({
-                  ...current,
-                  anonKey: event.target.value
-                }))
-              }
-              placeholder="Paste the public anon key"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1 block text-xs uppercase text-mist" htmlFor="cloud-sync-key">
-              Sync Key
-            </label>
-            <input
-              id="cloud-sync-key"
-              className="field"
-              value={cloudSettings.syncKey}
-              onChange={(event) =>
-                setCloudSettings((current) => ({
-                  ...current,
-                  syncKey: event.target.value
-                }))
-              }
-              placeholder="Private snapshot identifier"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button type="button" className="button-primary" onClick={pushToCloud}>
-              Push Snapshot
-            </button>
-            <button type="button" className="button-secondary" onClick={pullFromCloud}>
-              Pull Snapshot
-            </button>
-          </div>
-
-          <div className="rounded-2xl border border-line bg-white/5 p-4 text-sm text-slate-300">
-            <p className={syncStatus.tone}>{syncStatus.message || "No cloud action yet."}</p>
-            <p className="mt-2 text-mist">
-              Last push: {cloudSettings.lastPushedAt || "never"} · Last pull:{" "}
-              {cloudSettings.lastPulledAt || "never"}
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
   );
 
@@ -2100,9 +2088,6 @@ Critically review the MCQ:
         soundEnabled={Boolean(commandCenterSnapshot.settings?.celebrationSoundEnabled)}
         onDone={() => setCelebration(null)}
       />
-      {tab !== "coach" ? (
-        <CoachStatusPanel plan={coachPlan} onReturnToCoach={() => updateActiveTab("coach")} />
-      ) : null}
 
       <section className="hero-card">
         <div className="grid gap-6 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
@@ -2116,8 +2101,7 @@ Critically review the MCQ:
                 Make the next study move feel obvious.
               </h1>
               <p className="max-w-3xl text-base leading-7 text-slate-200">
-                Readiness, weak systems, block execution, NBME analysis, and the six-month war map,
-                all in one premium command surface.
+                Readiness, weak systems, block execution, and NBME analysis in one focused command surface.
               </p>
             </div>
           </div>
@@ -2160,13 +2144,11 @@ Critically review the MCQ:
         </div>
       </div>
 
-      {tab === "coach" && renderCoachTab()}
       {tab === "hq" && renderHQTab()}
       {tab === "systems" && renderSystemsTab()}
       {tab === "uworld" && renderUWorldTab()}
       {tab === "nbmes" && renderNBMEsTab()}
       {tab === "incorrects" && renderIncorrectsTab()}
-      {tab === "map" && renderMapTab()}
     </div>
   );
 }
