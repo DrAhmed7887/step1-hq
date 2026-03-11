@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "test:smoke": "npm run build && node --test tests/smoke/smoke.test.mjs"
+    "preview": "npm run build && wrangler dev",
+    "test:smoke": "npm run build && node --test tests/smoke/smoke.test.mjs",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
@@ -18,12 +19,14 @@
     "recharts": "^2.15.4"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.27.0",
     "@vitejs/plugin-react": "^5.0.2",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "serve": "^14.2.6",
     "tailwindcss": "^3.4.17",
     "vite": "^7.2.0",
-    "vite-plugin-pwa": "^1.0.3"
+    "vite-plugin-pwa": "^1.0.3",
+    "wrangler": "^4.72.0"
   }
 }
