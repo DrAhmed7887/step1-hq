@@ -52,7 +52,11 @@ function formatLastExport(meta) {
   })}`;
 }
 
-export default function SettingsPanel() {
+export default function SettingsPanel({
+  triggerClassName = "button-secondary h-11 w-11 rounded-full p-0",
+  triggerContent = null,
+  ariaLabel = "Open Settings"
+}) {
   const [open, setOpen] = useState(false);
   const [pendingRestore, setPendingRestore] = useState(null);
   const [status, setStatus] = useState({ tone: "text-mist", message: "" });
@@ -131,11 +135,11 @@ export default function SettingsPanel() {
     <>
       <button
         type="button"
-        className="button-secondary h-11 w-11 rounded-full p-0"
-        aria-label="Open Settings"
+        className={triggerClassName}
+        aria-label={ariaLabel}
         onClick={() => setOpen(true)}
       >
-        <GearIcon />
+        {triggerContent || <GearIcon />}
       </button>
 
       <input
@@ -148,8 +152,12 @@ export default function SettingsPanel() {
       />
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
-          <div className="panel w-full max-w-lg p-5 sm:p-6" data-settings-panel="true">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 px-4 py-6 backdrop-blur-sm">
+          <div className="flex min-h-full items-start justify-center sm:items-center">
+          <div
+            className="panel w-full max-w-lg max-h-[calc(100vh-3rem)] overflow-y-auto p-5 sm:p-6"
+            data-settings-panel="true"
+          >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-amber">Settings</p>
@@ -192,6 +200,7 @@ export default function SettingsPanel() {
                 {status.message}
               </p>
             ) : null}
+          </div>
           </div>
 
           {pendingRestore ? (

@@ -4,25 +4,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#08111e",
-        panel: "#0f1b2d",
-        line: "#1d3148",
-        mist: "#8ea6c4",
-        coral: "#ff6b57",
-        amber: "#f8b84e",
-        teal: "#32c6b7",
-        mint: "#8cd17d"
+        ink: "#0a0e1a",
+        panel: "#111827",
+        line: "#23304a",
+        mist: "#93a4bf",
+        coral: "#f87171",
+        amber: "#f59e0b",
+        teal: "#22d3ee",
+        mint: "#34d399",
+        calm: "#818cf8"
       },
       boxShadow: {
-        panel: "0 18px 50px rgba(3, 10, 19, 0.28)"
+        panel: "0 20px 60px rgba(4, 8, 20, 0.48)",
+        glow: "0 0 24px rgba(34, 211, 238, 0.18)"
       },
       fontFamily: {
-        display: ["Space Grotesk", "sans-serif"],
+        display: ["Plus Jakarta Sans", "sans-serif"],
+        body: ["DM Sans", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"]
       },
       backgroundImage: {
         grid:
-          "linear-gradient(to right, rgba(142,166,196,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(142,166,196,0.06) 1px, transparent 1px)"
+          "linear-gradient(to right, rgba(147,164,191,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(147,164,191,0.08) 1px, transparent 1px)"
       }
     }
   },

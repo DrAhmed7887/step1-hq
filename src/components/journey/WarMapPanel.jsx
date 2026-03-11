@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TRACK_DEFINITIONS } from "../../lib/commandCenter";
 import { buildWarMapWeeks, getMilestoneStatus, THREAD_COLORS } from "../../lib/journey";
 import MomentumMeter from "./MomentumMeter";
+import Card from "../ui/Card";
 
 const SVG_WIDTH = 1120;
 const SVG_HEIGHT = 360;
@@ -101,7 +102,7 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
   const path = buildSmoothPath(nodes);
 
   return (
-    <section className="panel p-5 sm:p-6">
+    <Card glow>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-amber">War Map</p>
@@ -110,28 +111,18 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
             One path, four threads, and only real work. Quiet weeks stay visible. Active weeks keep the line lit.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="segmented-shell">
           <button
             type="button"
             onClick={() => setView("map")}
-            className={classNames(
-              "rounded-full px-4 py-2 text-sm font-semibold transition",
-              view === "map"
-                ? "bg-coral text-white"
-                : "border border-line bg-white/5 text-slate-200 hover:border-amber/40"
-            )}
+            className={classNames("segmented-pill", view === "map" ? "active" : "")}
           >
             War Map
           </button>
           <button
             type="button"
             onClick={() => setView("growth")}
-            className={classNames(
-              "rounded-full px-4 py-2 text-sm font-semibold transition",
-              view === "growth"
-                ? "bg-coral text-white"
-                : "border border-line bg-white/5 text-slate-200 hover:border-amber/40"
-            )}
+            className={classNames("segmented-pill", view === "growth" ? "active" : "")}
           >
             Growth Log
           </button>
@@ -164,7 +155,7 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
       </div>
 
       {view === "map" ? (
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-line bg-slate-950/50">
+        <div className="mt-6 overflow-hidden rounded-[28px] border border-white/10 bg-black/20">
           <svg
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
             className="h-auto w-full"
@@ -334,6 +325,6 @@ export default function WarMapPanel({ warRoomState, commandCenterState, momentum
           </div>
         </div>
       )}
-    </section>
+    </Card>
   );
 }

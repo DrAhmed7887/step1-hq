@@ -5,7 +5,7 @@ import avatarExhausted from "../assets/ninja/avatar-exhausted.png";
 import avatarReady from "../assets/ninja/avatar-ready.png";
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import MomentumMeter from "../components/journey/MomentumMeter";
-import SettingsPanel from "../components/settings/SettingsPanel";
+import Card from "../components/ui/Card";
 import { sections, topics } from "../data/warRoomData";
 import {
   BACKUP_META_STORAGE_KEY,
@@ -148,6 +148,54 @@ function milestoneHint(milestone, warRoomState) {
     default:
       return "Manual milestone";
   }
+}
+
+function buildGreeting(date = new Date()) {
+  const hour = date.getHours();
+
+  if (hour >= 5 && hour < 12) {
+    return {
+      title: "Good morning, Doctor.",
+      tone: "Your calmest hour matters most. Start before the day starts negotiating."
+    };
+  }
+
+  if (hour >= 12 && hour < 18) {
+    return {
+      title: "Good afternoon, Doctor.",
+      tone: "Reset the line. A strong middle of the day can still carry the whole plan."
+    };
+  }
+
+  if (hour >= 18 && hour < 23) {
+    return {
+      title: "Good evening, Doctor.",
+      tone: "Keep the room quiet, keep the task list small, and make the next hour count."
+    };
+  }
+
+  return {
+    title: "Late night grind?",
+    tone: "Protect the essentials. Precision beats forcing one more tired block."
+  };
+}
+
+function resolveTaskVariant(task) {
+  const title = String(task?.title || "").toLowerCase();
+
+  if (title.includes("uworld")) {
+    return "success";
+  }
+
+  if (title.includes("fa") || title.includes("first aid") || title.includes("pathoma")) {
+    return "calm";
+  }
+
+  if (title.includes("anki")) {
+    return "warning";
+  }
+
+  return "default";
 }
 
 export default function CommandCenterPage() {
@@ -371,9 +419,20 @@ export default function CommandCenterPage() {
   const avatarPose = celebration ? "attack" : resolveAvatarPose(todayCheckIn || checkInDraft);
   const avatarSource = AVATAR_BY_POSE[avatarPose];
   const lastCheckIn = getMostRecentCheckIn(state.checkIns, today);
+  const greeting = buildGreeting(new Date());
+  const heroQuote = todaysQuote || {
+    text: "The line holds when you show up before the day makes demands.",
+    source: "Coach"
+  };
+  const visibleTasks = (todaysCoachPlan?.tasks || []).filter(
+    (task) => !String(task.title || "").toLowerCase().includes("passive option")
+  );
+  const passiveTask = (todaysCoachPlan?.tasks || []).find((task) =>
+    String(task.title || "").toLowerCase().includes("passive option")
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="page-stagger space-y-6">
       <MilestoneCelebration
         milestone={celebration}
         soundEnabled={Boolean(state.settings?.celebrationSoundEnabled)}
@@ -381,8 +440,9 @@ export default function CommandCenterPage() {
       />
 
       {backupReminder ? (
-        <section
-          className="panel-soft flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+        <Card
+          variant="warning"
+          className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
           data-backup-reminder="true"
         >
           <p className="text-sm text-slate-200">{backupReminder.message}</p>
@@ -393,150 +453,176 @@ export default function CommandCenterPage() {
           >
             Dismiss
           </button>
-        </section>
+        </Card>
       ) : null}
 
-      <section className="panel overflow-hidden">
-        <div className="flex justify-end px-5 pt-5 sm:px-7">
-          <SettingsPanel />
-        </div>
-        <div className="grid gap-6 px-5 pb-6 pt-2 sm:px-7 lg:grid-cols-[1.2fr,0.8fr]">
-          <div className="space-y-4">
-            <div className="pill border-coral/30 text-coral">Command Center</div>
+      <section className="hero-card">
+        <div className="grid gap-6 lg:grid-cols-[1.3fr,0.7fr] lg:items-start">
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="pill">Command Center</div>
+              <p className="text-xs uppercase tracking-[0.24em] text-mist">{formatLongDate(today)}</p>
+            </div>
             <div className="space-y-3">
-              <p className="text-sm uppercase tracking-[0.2em] text-mist">{formatLongDate(today)}</p>
-              <h1 className="text-3xl font-bold text-white sm:text-4xl">
-                Protect family time and give the coach real constraints.
+              <p className="text-sm uppercase tracking-[0.24em] text-teal/80">Daily check-in</p>
+              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+                {greeting.title}
               </h1>
+              <p className="max-w-2xl text-base leading-7 text-slate-200">{greeting.tone}</p>
               <p className="max-w-2xl text-sm leading-7 text-mist">
-                Daily check-in, top priorities, milestone control, and a close-day ritual that stays fast.
+                Protect family time and give the coach real constraints.
               </p>
             </div>
+
+            {todaysQuote ? (
+              <div
+                className="panel-soft px-5 py-6"
+                data-quote-card="true"
+                data-quote-source={heroQuote.source}
+              >
+                <p className="hero-quote text-2xl leading-tight sm:text-[2rem]">
+                  &ldquo;{heroQuote.text}&rdquo;
+                </p>
+                <p className="mt-4 text-right text-xs uppercase tracking-[0.22em] text-mist">
+                  {heroQuote.source}
+                </p>
+              </div>
+            ) : (
+              <div className="panel-soft px-5 py-6" data-quote-placeholder="true">
+                <p className="hero-quote text-2xl leading-tight sm:text-[2rem]">
+                  &ldquo;{heroQuote.text}&rdquo;
+                </p>
+                <p className="mt-4 text-right text-xs uppercase tracking-[0.22em] text-mist">
+                  {heroQuote.source}
+                </p>
+              </div>
+            )}
           </div>
 
-          <div className="grid gap-3">
-            <Link to="/war-room?tab=map" className="panel-soft px-4 py-4 transition hover:border-teal/40 hover:bg-white/10">
-              <p className="text-xs uppercase tracking-[0.18em] text-mist">View</p>
-              <p className="mt-1 text-lg font-semibold text-white">Open War Map</p>
-              <p className="mt-1 text-sm text-slate-300">See the six-month line, active threads, and milestones.</p>
+          <div className="grid gap-4">
+            <Card glow className="bg-transparent p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-mist">Current stance</p>
+                  <p className="mt-2 text-xl font-semibold text-white">
+                    {todayCheckIn
+                      ? `${todayCheckIn.energy} energy · ${todayCheckIn.hours}h`
+                      : lastCheckIn
+                        ? `${lastCheckIn.date} · ${lastCheckIn.hours}h`
+                        : "Not locked in yet"}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">
+                    Momentum holds at {Math.round(latestMomentum * 100)}%.
+                  </p>
+                </div>
+                <div className="rounded-[20px] border border-white/10 bg-black/20 p-3">
+                  <img
+                    src={avatarSource}
+                    alt="Daily avatar"
+                    className="h-16 w-16 pixelated"
+                    data-avatar-pose={avatarPose}
+                  />
+                </div>
+              </div>
+            </Card>
+
+            <Link
+              to="/war-room?tab=map"
+              className="panel-soft transition hover:-translate-y-0.5 hover:border-teal/40"
+            >
+              <p className="text-[11px] uppercase tracking-[0.2em] text-mist">View</p>
+              <p className="mt-2 text-lg font-semibold text-white">Open War Map</p>
+              <p className="mt-1 text-sm leading-6 text-slate-300">
+                See the six-month line, active threads, and milestone landmarks.
+              </p>
             </Link>
-            <div className="panel-soft px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-mist">Last Check-In</p>
-              <p className="mt-1 text-lg font-semibold text-white">
-                {todayCheckIn
-                  ? `${todayCheckIn.energy} energy · ${todayCheckIn.hours}h`
-                  : lastCheckIn
-                    ? `${lastCheckIn.date} · ${lastCheckIn.hours}h`
-                    : "Not locked in yet"}
-              </p>
-              <p className="mt-1 text-sm text-slate-300">
-                Momentum holds at {Math.round(latestMomentum * 100)}%.
-              </p>
-            </div>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
-        <section className="panel p-5 sm:p-6">
+      <MomentumMeter
+        value={latestMomentum}
+        label={`Day ${Object.keys(state.checkIns || {}).length || 1} · ${Math.round(latestMomentum * 100)}% momentum`}
+        detail="The meter keeps pressure without punishing one bad day. Build it with calm repetition."
+      />
+
+      <div className="grid gap-6 lg:grid-cols-[1.08fr,0.92fr]">
+        <Card as="form" glow className="space-y-5" onSubmit={submitCheckIn}>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-amber">Daily Check-In</p>
-              <h2 className="mt-2 text-2xl font-bold text-white">Set the tone before the day drifts.</h2>
+              <h2 className="mt-2 text-3xl font-bold text-white">How&apos;s today looking?</h2>
+              <p className="mt-2 max-w-xl text-sm leading-7 text-mist">
+                Set energy and hours once. The coaching engine will handle the rest.
+              </p>
             </div>
-            <div className="rounded-2xl border border-line bg-slate-950/70 p-3">
-              <img
-                src={avatarSource}
-                alt="Daily avatar"
-                className="h-16 w-16 pixelated"
-                data-avatar-pose={avatarPose}
-              />
-            </div>
+            <span className="pill">Core move</span>
           </div>
 
-          <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr,0.9fr]">
-            <form className="space-y-5" onSubmit={submitCheckIn}>
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.2em] text-mist">Energy</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {ENERGY_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() =>
-                        setCheckInDraft((current) => ({
-                          ...current,
-                          energy: option.value
-                        }))
-                      }
-                      className={classNames(
-                        "rounded-full px-4 py-2 text-sm font-semibold transition",
-                        checkInDraft.energy === option.value
-                          ? "bg-coral text-white"
-                          : "border border-line bg-white/5 text-slate-200 hover:border-amber/40"
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+          <div className="space-y-5">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-mist">⚡ Energy</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {ENERGY_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() =>
+                      setCheckInDraft((current) => ({
+                        ...current,
+                        energy: option.value
+                      }))
+                    }
+                    className={classNames(
+                      "toggle-pill",
+                      checkInDraft.energy === option.value ? "active" : ""
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
-
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.2em] text-mist">Study Hours</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {HOUR_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() =>
-                        setCheckInDraft((current) => ({
-                          ...current,
-                          hours: option.value
-                        }))
-                      }
-                      className={classNames(
-                        "rounded-full px-4 py-2 text-sm font-semibold transition",
-                        checkInDraft.hours === option.value
-                          ? "bg-coral text-white"
-                          : "border border-line bg-white/5 text-slate-200 hover:border-amber/40"
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button type="submit" className="button-primary">
-                Lock Today&apos;s Tempo
-              </button>
-            </form>
-
-            <div className="space-y-4">
-              <MomentumMeter value={latestMomentum} />
-              {todaysQuote ? (
-                <div
-                  className="panel-soft p-4"
-                  data-quote-card="true"
-                  data-quote-source={todaysQuote.source}
-                >
-                  <p className="text-sm italic leading-6 text-slate-100">&ldquo;{todaysQuote.text}&rdquo;</p>
-                  <p className="mt-3 text-right text-xs uppercase tracking-[0.18em] text-mist">
-                    {todaysQuote.source}
-                  </p>
-                </div>
-              ) : (
-                <div className="panel-soft p-4 text-sm text-mist" data-quote-placeholder="true">
-                  Check in first. The quote engine stays local and changes with the day state.
-                </div>
-              )}
             </div>
-          </div>
-        </section>
 
-        <section className="panel p-5 sm:p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-amber">Mission Frame</p>
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-mist">🕐 Study Hours</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {HOUR_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() =>
+                      setCheckInDraft((current) => ({
+                        ...current,
+                        hours: option.value
+                      }))
+                    }
+                    className={classNames(
+                      "toggle-pill toggle-pill-warm",
+                      checkInDraft.hours === option.value ? "active" : ""
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="button-primary w-full sm:w-auto">
+              Lock Today&apos;s Tempo
+            </button>
+          </div>
+        </Card>
+
+        <Card variant="calm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-calm">Mission Frame</p>
+              <h2 className="mt-2 text-2xl font-bold text-white">Keep the surface clean.</h2>
+            </div>
+            <p className="text-sm text-slate-400">{TRACK_DEFINITIONS.length} tracks active</p>
+          </div>
+
           <div className="mt-5 grid gap-5">
             <div>
               <label className="text-[11px] uppercase tracking-[0.2em] text-mist" htmlFor="weekly-focus">
@@ -562,7 +648,7 @@ export default function CommandCenterPage() {
               </label>
               <textarea
                 id="command-notes"
-                className="field mt-3 min-h-36"
+                className="field mt-3 min-h-32"
                 value={state.notes}
                 onChange={(event) =>
                   setState((current) => ({
@@ -580,7 +666,7 @@ export default function CommandCenterPage() {
                 ).length;
 
                 return (
-                  <div key={track.id} className="panel-soft p-4">
+                  <div key={track.id} className="panel-soft">
                     <p className="text-[11px] uppercase tracking-[0.18em] text-mist">{track.id}</p>
                     <p className="mt-2 text-lg font-semibold text-white">{track.shortLabel}</p>
                     <p className="mt-1 text-sm text-slate-300">{trackTodos} open tasks</p>
@@ -589,48 +675,66 @@ export default function CommandCenterPage() {
               })}
             </div>
           </div>
-        </section>
+        </Card>
       </div>
 
-      <section className="panel p-5 sm:p-6">
+      <Card glow className="space-y-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-amber">Coach Daily Plan</p>
-            <h2 className="mt-2 text-2xl font-bold text-white">Generated from your real check-in and current phase.</h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-teal">Today&apos;s Plan</p>
+            <h2 className="mt-2 text-3xl font-bold text-white">
+              {todaysCoachPlan ? "Your work is already reduced to the next right moves." : "Generate the day, then follow the list."}
+            </h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-mist">
-              The engine now pulls from the IMG sequencing rules, daily hour template, and the current weak point.
+              The engine is using the real sequencing rules, daily hour template, and current weak point.
             </p>
           </div>
           {todaysCoachPlan?.dailyTemplate ? (
-            <div className="rounded-2xl border border-line bg-white/5 px-4 py-3">
+            <div className="panel-soft min-w-[200px]">
               <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Template</p>
-              <p className="mt-1 text-base font-semibold text-white">{todaysCoachPlan.dailyTemplate.label}</p>
+              <p className="mt-2 text-base font-semibold text-white">{todaysCoachPlan.dailyTemplate.label}</p>
               <p className="mt-1 text-sm text-slate-300">{todaysCoachPlan.phase.label}</p>
             </div>
           ) : null}
         </div>
 
         {todaysCoachPlan ? (
-          <div className="mt-5 grid gap-5 xl:grid-cols-[1.1fr,0.9fr]">
+          <div className="grid gap-5 xl:grid-cols-[1.1fr,0.9fr]">
             <div className="space-y-3">
-              {todaysCoachPlan.tasks?.map((task) => (
-                <article key={task.id} className="panel-soft p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-base font-semibold text-white">{task.title}</p>
+              {visibleTasks.map((task) => (
+                <Card
+                  key={task.id}
+                  as="article"
+                  variant={resolveTaskVariant(task)}
+                  className="p-4 sm:p-5"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-teal/30 bg-teal/10 text-sm text-teal">
+                      □
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <p className="text-base font-semibold text-white">{task.title}</p>
+                        <span className="pill border-white/10 text-white/80">{task.minutes} min</span>
+                      </div>
                       <p className="mt-2 text-sm leading-6 text-slate-300">{task.detail}</p>
                     </div>
-                    <span className="rounded-full border border-teal/20 px-3 py-1 text-xs text-teal">
-                      {task.minutes} min
-                    </span>
                   </div>
-                </article>
+                </Card>
               ))}
             </div>
 
             <div className="space-y-4">
-              <div className="panel-soft p-4">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Next Best Move</p>
+              {passiveTask ? (
+                <Card variant="warning" className="p-4 sm:p-5">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-amber">Passive Option</p>
+                  <p className="mt-2 text-base font-semibold text-white">{passiveTask.title.replace("Passive option:", "Passive:")}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-300">{passiveTask.detail}</p>
+                </Card>
+              ) : null}
+
+              <Card variant="success" className="p-4 sm:p-5">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-teal">Next Best Move</p>
                 <p className="mt-2 text-base font-semibold text-white">
                   {todaysCoachPlan.nextBestMove?.recommendation?.name || "No recommendation unlocked yet"}
                 </p>
@@ -639,30 +743,30 @@ export default function CommandCenterPage() {
                     todaysCoachPlan.nextBestMove?.gates?.[0]?.message ||
                     "Check in first to generate the next move."}
                 </p>
-              </div>
+              </Card>
 
-              <div className="panel-soft p-4">
+              <Card className="p-4 sm:p-5">
                 <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Coaching Notes</p>
                 <div className="mt-3 space-y-2 text-sm text-slate-300">
                   {(todaysCoachPlan.rules || []).map((rule) => (
                     <p key={rule}>{rule}</p>
                   ))}
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         ) : (
-          <div className="mt-5 rounded-2xl border border-dashed border-line p-6 text-sm text-mist">
+          <div className="panel-soft border border-dashed border-white/10 p-6 text-sm text-mist">
             Lock today&apos;s tempo to generate the study list.
           </div>
         )}
-      </section>
+      </Card>
 
       <div className="grid gap-6 xl:grid-cols-[1fr,1fr]">
-        <section className="panel p-5 sm:p-6">
+        <Card variant="calm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-amber">Top 3</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-calm">Front Line</p>
               <h2 className="mt-2 text-2xl font-bold text-white">Today&apos;s front line.</h2>
             </div>
             <p className="text-sm text-slate-400">{topThree.length} active</p>
@@ -671,10 +775,10 @@ export default function CommandCenterPage() {
           <div className="mt-5 space-y-3">
             {topThree.length ? (
               topThree.map((todo, index) => (
-                <article key={todo.id} className="panel-soft p-4">
+                <article key={todo.id} className="panel-soft">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-slate-950/60 text-sm font-semibold text-slate-300">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/20 text-sm font-semibold text-slate-200">
                         {index + 1}
                       </span>
                       <div>
@@ -720,7 +824,7 @@ export default function CommandCenterPage() {
             <div className="mt-3 space-y-2">
               {todaysEvents.length ? (
                 todaysEvents.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between rounded-2xl border border-line bg-white/5 px-4 py-3 text-sm">
+                  <div key={event.id} className="panel-soft flex items-center justify-between px-4 py-3 text-sm">
                     <span className="text-slate-200">{event.title}</span>
                     <span className="font-mono text-slate-400">{formatEventRange(event)}</span>
                   </div>
@@ -732,9 +836,9 @@ export default function CommandCenterPage() {
               )}
             </div>
           </div>
-        </section>
+        </Card>
 
-        <section className="panel p-5 sm:p-6">
+        <Card variant="warning">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-amber">Milestones</p>
@@ -763,7 +867,7 @@ export default function CommandCenterPage() {
               const manualFlag = MANUAL_MILESTONE_BY_ID[milestone.id];
 
               return (
-                <article key={milestone.id} className="rounded-2xl border border-line bg-white/5 p-4">
+                <article key={milestone.id} className="panel-soft">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-white">{milestone.label}</p>
@@ -791,14 +895,14 @@ export default function CommandCenterPage() {
               );
             })}
           </div>
-        </section>
+        </Card>
       </div>
 
-      <section className={classNames("panel p-5 sm:p-6", reflectionFlash ? "animate-teal-confirm" : "")}>
+      <Card className={classNames(reflectionFlash ? "animate-teal-confirm" : "")}>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-amber">Reflection Close</p>
-            <h2 className="mt-2 text-2xl font-bold text-white">End the day with one sentence.</h2>
+            <h2 className="mt-2 text-3xl font-bold text-white">What clicked today?</h2>
             <p className="mt-2 text-sm leading-7 text-mist">
               One thing understood today that was not understood yesterday. No journaling. No editing.
             </p>
@@ -818,7 +922,7 @@ export default function CommandCenterPage() {
         <div className="mt-5 grid gap-5 xl:grid-cols-[1fr,0.9fr]">
           <div>
             {todayReflection ? (
-              <article className="rounded-2xl border border-teal/30 bg-teal/10 p-4">
+              <article className="panel-soft border border-teal/30 bg-teal/10 p-4">
                 <p className="text-[11px] uppercase tracking-[0.2em] text-teal">Locked In</p>
                 <p className="mt-3 text-sm leading-7 text-white">{todayReflection.reflection}</p>
                 <p className="mt-3 text-xs uppercase tracking-[0.18em] text-slate-300">
@@ -853,7 +957,7 @@ export default function CommandCenterPage() {
             <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
               {state.reflections.length ? (
                 state.reflections.map((entry) => (
-                  <article key={entry.date} className="rounded-2xl border border-line bg-white/5 p-4">
+                  <article key={entry.date} className="panel-soft">
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xs uppercase tracking-[0.18em] text-mist">{entry.date}</p>
                       <span className="rounded-full border border-teal/20 px-2 py-1 text-[11px] text-teal">
@@ -871,7 +975,7 @@ export default function CommandCenterPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

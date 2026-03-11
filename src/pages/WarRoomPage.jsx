@@ -41,7 +41,7 @@ import { generateCoachingPlan, resolveDailyCoachInputs } from "../lib/coachingEn
 import { createCombinedBackup, normalizeImportedBackup } from "../lib/appBackup";
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import WarMapPanel from "../components/journey/WarMapPanel";
-import SettingsPanel from "../components/settings/SettingsPanel";
+import Card from "../components/ui/Card";
 import CoachStatusPanel from "../components/war-room/CoachStatusPanel";
 import { getLatestMomentum, getNewMilestones } from "../lib/journey";
 import {
@@ -1446,21 +1446,32 @@ Critically review the MCQ:
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
           {/* Block 1: Readiness Status */}
-          <section className="panel-soft p-6">
-            <h2 className="text-xs uppercase tracking-[0.2em] text-mist font-semibold">1. Exam Readiness</h2>
-            <div className={`mt-4 text-3xl font-bold ${readinessPanel.tone}`}>{readinessPanel.status}</div>
-            <ul className="mt-4 space-y-2 text-sm text-slate-300">
+          <Card variant={readinessPanel.status === "Ready" ? "success" : readinessPanel.status === "Unsafe" ? "danger" : "warning"}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-mist">1. Exam Readiness</h2>
+                <div className={`mt-4 text-4xl font-bold tracking-tight ${readinessPanel.tone}`}>{readinessPanel.status.toUpperCase()}</div>
+              </div>
+              <span className="pill">Signal</span>
+            </div>
+            <ul className="mt-5 space-y-2 text-sm text-slate-300">
               {readinessPanel.reasons?.map((reason, idx) => (
                 <li key={idx} className="flex gap-2">
                   <span className={readinessPanel.tone}>•</span> {reason}
                 </li>
               ))}
             </ul>
-          </section>
+          </Card>
 
           {/* Block 2: Weak Systems Heatmap */}
-          <section className="panel-soft p-6">
-            <h2 className="text-xs uppercase tracking-[0.2em] text-mist font-semibold">2. Priority Weaknesses</h2>
+          <Card variant="danger">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-mist">2. Priority Weaknesses</h2>
+                <p className="mt-3 text-3xl font-bold text-white">TARGET SYSTEMS</p>
+              </div>
+              <span className="pill">Fix first</span>
+            </div>
             <div className="mt-4 space-y-3">
               {weakSystems.length > 0 ? (
                 weakSystems.map((sys) => (
@@ -1486,16 +1497,16 @@ Critically review the MCQ:
               ) : (
                 <div className="text-sm text-mist italic">Not enough UWorld data yet.</div>
               )}
-               <button onClick={() => updateActiveTab("systems")} className="text-xs text-teal mt-2 underline">View all systems</button>
+               <button onClick={() => updateActiveTab("systems")} className="mt-2 text-xs text-teal underline">View all systems</button>
             </div>
-          </section>
+          </Card>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Block 3: Next Best Study Move */}
-          <section className="panel-soft p-6 border-l-4 border-l-teal/50">
-            <h2 className="text-xs uppercase tracking-[0.2em] text-teal font-semibold">3. Next Best Move</h2>
-            <p className="mt-4 text-2xl font-bold text-white leading-tight">{nextMove}</p>
+          <Card variant="success" glow>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">3. Next Best Move</h2>
+            <p className="mt-4 text-3xl font-bold leading-tight text-white">{nextMove}</p>
             <p className="mt-2 text-mist text-sm">{nextMoveDetail}</p>
             {coachPlan.nextBestMove?.alternatives?.length ? (
               <div className="mt-4 space-y-1 text-xs text-slate-400">
@@ -1504,11 +1515,12 @@ Critically review the MCQ:
                 ))}
               </div>
             ) : null}
-          </section>
+          </Card>
 
           {/* Block 4: Assessment Timeline */}
-          <section className="panel-soft p-6">
-            <h2 className="text-xs uppercase tracking-[0.2em] text-mist font-semibold">4. Assessment Timeline</h2>
+          <Card variant="calm">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-mist">4. Assessment Timeline</h2>
+            <p className="mt-3 text-3xl font-bold text-white">RECENT SIGNAL</p>
             <div className="mt-4 space-y-3 text-sm">
                {[...state.assessments].sort((a,b) => b.date.localeCompare(a.date)).slice(0,3).map(assessment => (
                  <div key={assessment.id} className="flex justify-between border-b border-white/5 pb-2">
@@ -1521,14 +1533,14 @@ Critically review the MCQ:
                )}
                <button onClick={() => updateActiveTab("nbmes")} className="text-xs text-teal mt-2 underline">Log new NBME</button>
             </div>
-          </section>
+          </Card>
         </div>
       </div>
     );
   };
 
   const renderSystemsTab = () => (
-    <div className="space-y-6">
+    <div className="page-stagger space-y-6">
        <section className="panel p-5 sm:p-6">
         <SectionTitle eyebrow="Mapping" title="System Progress" body="Visualizing UWorld completions and First Aid reads." />
         <div className="mt-6 flex flex-wrap gap-4">
@@ -2092,24 +2104,60 @@ Critically review the MCQ:
         <CoachStatusPanel plan={coachPlan} onReturnToCoach={() => updateActiveTab("coach")} />
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="hero-card">
+        <div className="grid gap-6 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="pill">War Room</div>
+              <p className="text-xs uppercase tracking-[0.24em] text-mist">Study intelligence</p>
+            </div>
+            <div className="space-y-3">
+              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+                Make the next study move feel obvious.
+              </h1>
+              <p className="max-w-3xl text-base leading-7 text-slate-200">
+                Readiness, weak systems, block execution, NBME analysis, and the six-month war map,
+                all in one premium command surface.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <StatCard
+              label="Pass Signal"
+              value={forecastHeadline(coachPlan.forecast)}
+              accent={coachPlan.forecast?.color || "text-white"}
+              hint={forecastSubline(coachPlan.forecast)}
+            />
+            <StatCard
+              label="UWorld Accuracy"
+              value={`${accuracy}%`}
+              accent="text-teal"
+              hint={`${totals.totalQuestions} questions logged`}
+            />
+            <StatCard
+              label="Days Left"
+              value={daysLeft}
+              accent={daysLeft <= 30 ? "text-coral" : "text-amber"}
+              hint={state.examDate}
+            />
+          </div>
+        </div>
+      </section>
+
+      <div className="segmented-shell w-full justify-start">
         <div className="flex flex-wrap gap-2">
           {tabs.map((entry) => (
             <button
               key={entry.id}
               type="button"
               onClick={() => updateActiveTab(entry.id)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                tab === entry.id
-                  ? "bg-coral text-white"
-                  : "border border-line bg-white/5 text-slate-200 hover:border-amber/40"
-              }`}
+              className={`segmented-pill ${tab === entry.id ? "active" : ""}`}
             >
               {entry.label}
             </button>
           ))}
         </div>
-        <SettingsPanel />
       </div>
 
       {tab === "coach" && renderCoachTab()}
