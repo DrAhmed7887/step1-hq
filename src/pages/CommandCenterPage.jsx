@@ -37,6 +37,7 @@ import {
   resolveSessionType
 } from "../lib/journey";
 import { usePersistentState, useStorageJson, writeStorageJson } from "../lib/persistence";
+import { getUWorldCompletionPct } from "../lib/resourceProgress";
 import {
   WAR_ROOM_STORAGE_KEY,
   createWarRoomState,
@@ -142,7 +143,7 @@ function milestoneHint(milestone, warRoomState) {
     case "first-nbme":
       return "Log the first NBME in War Room.";
     case "uworld-50":
-      return `${Math.round((Number(warRoomState.totalQuestions || 0) / 3400) * 100)}% of UWorld logged`;
+      return `${Math.round(getUWorldCompletionPct(warRoomState))}% of UWorld logged`;
     case "usmle-exam-day":
       return `Exam date: ${warRoomState.examDate}`;
     default:

@@ -138,6 +138,23 @@
   }
 }
 
+@keyframes radar-pulse {
+  0% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
 @keyframes milestone-flash {
   0% {
     opacity: 0;
@@ -166,6 +183,20 @@
   }
 }
 
+@keyframes bar-flash {
+  0% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.55);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% 0;
@@ -173,6 +204,18 @@
 
   100% {
     background-position: -200% 0;
+  }
+}
+
+@keyframes tutor-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -366,6 +409,91 @@
     color: white;
     box-shadow: 0 10px 24px rgba(34, 211, 238, 0.2);
   }
+
+  .drill-row {
+    @apply rounded-[22px] border border-white/10 bg-black/10 p-4;
+  }
+
+  .drill-bar-track {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+  }
+
+  .drill-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f59e0b 0%, #22d3ee 60%, #818cf8 100%);
+    transition: width 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.3);
+  }
+
+  .drill-bar-fill.flash {
+    animation: bar-flash 400ms ease;
+  }
+
+  .drill-bar-fill-trackonly {
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.62), rgba(129, 140, 248, 0.58));
+  }
+
+  .drill-toast-shell {
+    @apply pointer-events-none fixed inset-x-0 top-5 z-50 flex justify-center px-4;
+  }
+
+  .drill-toast {
+    @apply rounded-full border border-teal/30 px-4 py-2 text-sm text-white shadow-panel;
+    background: rgba(8, 18, 31, 0.92);
+    backdrop-filter: blur(18px);
+  }
+
+  .tutor-panel-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 1rem;
+    pointer-events: none;
+  }
+
+  .tutor-panel {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 34rem);
+    height: min(78vh, 46rem);
+    overflow: hidden;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background:
+      linear-gradient(180deg, rgba(6, 12, 22, 0.96), rgba(15, 23, 42, 0.94)),
+      linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(245, 158, 11, 0.08));
+    box-shadow: 0 30px 80px rgba(2, 6, 23, 0.6);
+    animation: tutor-slide-in 0.22s ease-out;
+  }
+
+  .tutor-fab {
+    @apply fixed z-30 flex h-14 w-14 items-center justify-center rounded-full border border-teal/30 text-white shadow-panel transition;
+    right: 1rem;
+    bottom: 6.5rem;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.96), rgba(14, 165, 233, 0.84));
+    box-shadow: 0 18px 34px rgba(34, 211, 238, 0.3);
+  }
+
+  .tutor-fab:hover {
+    transform: translateY(-1px) scale(1.02);
+  }
+
+  .war-room-bg {
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(34, 211, 238, 0.08) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 20%, rgba(245, 158, 11, 0.07) 0%, transparent 42%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%235eead4' stroke-opacity='.10' stroke-width='1.1'%3E%3Cpath d='M8 36c22-16 51-18 79-6 30 13 57 13 88-6'/%3E%3Cpath d='M-6 72c30-18 66-18 98 0 31 18 62 18 94 0'/%3E%3Cpath d='M18 112c24-12 49-12 74 0 26 13 54 13 86-2'/%3E%3Cpath d='M-10 150c26-15 59-16 89-2 30 14 63 15 103 2'/%3E%3Cpath d='M12 194c25-16 58-17 92-4 31 12 63 11 106-8'/%3E%3Cpath d='M56 10c10 20 10 42 0 64-10 22-10 43 4 66'/%3E%3Cpath d='M120 -4c12 22 12 47 0 72-12 24-12 49 0 74'/%3E%3Cpath d='M186 22c8 19 8 39 0 61-8 22-8 45 6 68'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 100% 100%, 100% 100%, 220px 220px;
+    background-position: center;
+  }
 }
 
 @layer utilities {
@@ -375,6 +503,11 @@
 
   .animate-war-node {
     animation: war-map-pulse 2.2s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  .animate-radar-pulse {
+    animation: radar-pulse 2.1s ease-out infinite;
     transform-origin: center;
   }
 
@@ -477,6 +610,11 @@
     background-clip: text;
     color: transparent;
   }
+
+  .war-display {
+    font-family: "Black Ops One", "Plus Jakarta Sans", sans-serif;
+    letter-spacing: 0.04em;
+  }
 }
 
 .bottom-nav-shell {
@@ -532,5 +670,13 @@
 
   .bottom-nav {
     max-width: 30rem;
+  }
+
+  .tutor-panel-shell {
+    padding: 1.5rem 1.5rem 6rem;
+  }
+
+  .tutor-fab {
+    right: 2rem;
   }
 }

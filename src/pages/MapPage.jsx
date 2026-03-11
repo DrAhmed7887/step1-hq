@@ -81,7 +81,7 @@ export default function MapPage() {
   }
 
   return (
-    <div className="page-stagger space-y-6">
+    <div className="war-room-bg page-stagger space-y-6">
       <MilestoneCelebration
         milestone={celebration}
         soundEnabled={Boolean(commandCenterState.settings?.celebrationSoundEnabled)}
@@ -97,7 +97,7 @@ export default function MapPage() {
             </p>
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+            <h1 className="war-display text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
               War Map
             </h1>
             <p className="max-w-3xl text-sm leading-7 text-mist">

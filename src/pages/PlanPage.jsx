@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import DrillBoard from "../components/plan/DrillBoard";
+import TutorPanel from "../components/tutor/TutorPanel";
+import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import Card from "../components/ui/Card";
 import { sections, topics } from "../data/warRoomData";
+import { createCombinedBackup } from "../lib/appBackup";
 import {
   COMMAND_CENTER_STORAGE_KEY,
   createCommandCenterState,
@@ -10,6 +14,12 @@ import {
   hydrateCommandCenterState
 } from "../lib/commandCenter";
 import {
+  CLOUD_SYNC_SETTINGS_KEY,
+  createCloudSyncSettings,
+  hydrateCloudSyncSettings,
+  pushCloudSnapshot
+} from "../lib/cloudSync";
+import {
   classNames,
   formatEventRange,
   formatLongDate,
@@ -17,7 +27,12 @@ import {
   sortOpenTodos
 } from "../lib/dailyFlow";
 import { getLatestMomentum, THREAD_COLORS } from "../lib/journey";
-import { usePersistentState } from "../lib/persistence";
+import { usePersistentState, useStorageJson } from "../lib/persistence";
+import {
+  createResourceProgressPatch,
+  getRemainingUnits,
+  getTrackedResourceEntry
+} from "../lib/resourceProgress";
 import {
   WAR_ROOM_STORAGE_KEY,
   createWarRoomState,
@@ -48,6 +63,11 @@ export default function PlanPage() {
     () => createWarRoomState(sections),
     (saved) => hydrateWarRoomState(saved, sections)
   );
+  const cloudSettings = useStorageJson(
+    CLOUD_SYNC_SETTINGS_KEY,
+    createCloudSyncSettings,
+    hydrateCloudSyncSettings
+  );
 
   const today = todayKey();
   const todayCheckIn = commandCenterState.checkIns[today] || null;
@@ -62,6 +82,18 @@ export default function PlanPage() {
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [growthLogOpen, setGrowthLogOpen] = useState(false);
   const [reflectionFlash, setReflectionFlash] = useState(false);
+  const [progressToast, setProgressToast] = useState(null);
+  const [celebration, setCelebration] = useState(null);
+  const [tutorOpen, setTutorOpen] = useState(false);
+
+  useEffect(() => {
+    if (!progressToast) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => setProgressToast(null), 2200);
+    return () => window.clearTimeout(timeoutId);
+  }, [progressToast]);
 
   function toggleTodoStatus(todoId) {
     setCommandCenterState((current) => ({
@@ -155,6 +187,59 @@ export default function PlanPage() {
     window.setTimeout(() => setReflectionFlash(false), 900);
   }
 
+  function logResourceProgress(resourceId, amount) {
+    let patch = null;
+    let nextWarRoomState = null;
+
+    setWarRoomState((current) => {
+      patch = createResourceProgressPatch(current, resourceId, amount);
+
+      if (!patch) {
+        return current;
+      }
+
+      nextWarRoomState = {
+        ...current,
+        resourceProgress: patch.nextProgress
+      };
+      return nextWarRoomState;
+    });
+
+    if (!patch || !nextWarRoomState) {
+      return false;
+    }
+
+    const updatedEntry = getTrackedResourceEntry(nextWarRoomState, resourceId);
+    const remaining = getRemainingUnits(updatedEntry);
+
+    setProgressToast({
+      id: crypto.randomUUID(),
+      message: `+${patch.nextUnits - patch.previousUnits} ${patch.definition.unit} logged. ${
+        updatedEntry.totalUnits ? `${remaining} remaining.` : "Tracker updated."
+      }`
+    });
+
+    if (patch.thresholdsCrossed.length) {
+      const milestone = patch.thresholdsCrossed.at(-1);
+      setCelebration({
+        label: `${patch.definition.label} ${milestone}% locked`
+      });
+    }
+
+    if (cloudSettings.projectUrl && cloudSettings.anonKey && cloudSettings.syncKey) {
+      void pushCloudSnapshot(
+        cloudSettings,
+        createCombinedBackup({
+          warRoom: nextWarRoomState,
+          commandCenter: commandCenterState,
+          syncSettings: cloudSettings
+        })
+      ).catch(() => {});
+    }
+
+    return true;
+  }
+
   if (!todayCheckIn || !todaysCoachPlan) {
     return (
       <div className="page-stagger">
@@ -188,6 +273,18 @@ export default function PlanPage() {
 
   return (
     <div className="page-stagger space-y-6">
+      <MilestoneCelebration
+        milestone={celebration}
+        soundEnabled={Boolean(commandCenterState.settings?.celebrationSoundEnabled)}
+        onDone={() => setCelebration(null)}
+      />
+
+      {progressToast ? (
+        <div className="drill-toast-shell">
+          <div className="drill-toast">{progressToast.message}</div>
+        </div>
+      ) : null}
+
       <section className="hero-card">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -297,10 +394,14 @@ export default function PlanPage() {
         </div>
       </div>
 
+      <Card variant="success" glow>
+        <DrillBoard warRoomState={warRoomState} onLog={logResourceProgress} />
+      </Card>
+
       <Card variant="calm">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-calm">Front Line</p>
+            <p className="war-display text-xs uppercase tracking-[0.22em] text-calm">Front Line</p>
             <h2 className="mt-2 text-2xl font-bold text-white">Existing command tasks.</h2>
           </div>
           <p className="text-sm text-slate-400">{topThree.length} active</p>
@@ -468,6 +569,29 @@ export default function PlanPage() {
           </div>
         </div>
       </Card>
+
+      {warRoomState.tutorSettings?.apiKey?.trim() ? (
+        <>
+          <button
+            type="button"
+            className="tutor-fab"
+            onClick={() => setTutorOpen(true)}
+            aria-label="Open USMLE Tutor"
+          >
+            <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 3c-4.97 0-9 3.44-9 7.7 0 2.38 1.24 4.5 3.2 5.9L5 21l4.09-2.26c.9.21 1.89.32 2.91.32 4.97 0 9-3.44 9-7.7S16.97 3 12 3Zm-3 9.1h6v1.8H9v-1.8Zm0-3.6h9v1.8H9V8.5Z"
+              />
+            </svg>
+          </button>
+          <TutorPanel
+            apiKey={warRoomState.tutorSettings.apiKey}
+            open={tutorOpen}
+            onClose={() => setTutorOpen(false)}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

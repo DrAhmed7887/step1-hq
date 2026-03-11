@@ -5,6 +5,7 @@ import avatarExhausted from "../assets/ninja/avatar-exhausted.png";
 import avatarReady from "../assets/ninja/avatar-ready.png";
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import MomentumMeter from "../components/journey/MomentumMeter";
+import Logo from "../components/Logo";
 import Card from "../components/ui/Card";
 import { sections, topics } from "../data/warRoomData";
 import {
@@ -212,10 +213,15 @@ export default function HomePage() {
 
       <section className="hero-card p-5 text-center sm:p-6">
         <div className="mx-auto max-w-3xl space-y-4">
-          <div className="space-y-1">
+          <div className="flex justify-center">
+            <Logo compact className="justify-center" />
+          </div>
+
+          <div className="space-y-2">
             <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
               {greeting.title}
             </h1>
+            <p className="mx-auto max-w-2xl text-sm leading-7 text-mist">{greeting.tone}</p>
           </div>
 
           <div

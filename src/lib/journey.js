@@ -1,4 +1,5 @@
-import { TOTAL_UWORLD, todayKey } from "./warRoom.js";
+import { getUWorldCompletedUnits, TOTAL_UWORLD } from "./resourceProgress.js";
+import { todayKey } from "./warRoom.js";
 
 export const JOURNEY_START_KEY = "2026-03-01";
 export const WAR_MAP_WEEKS = 26;
@@ -281,7 +282,7 @@ export function getMilestoneStatus({ warRoomState, commandCenterState, today = t
         complete = (warRoomState?.assessments || []).some((entry) => entry.kind === "NBME");
         break;
       case "uworld-50":
-        complete = Number(warRoomState?.totalQuestions || 0) >= TOTAL_UWORLD * 0.5;
+        complete = getUWorldCompletedUnits(warRoomState) >= TOTAL_UWORLD * 0.5;
         break;
       case "python-course-finished":
         complete = Boolean(manualFlags.pythonCourseFinished);

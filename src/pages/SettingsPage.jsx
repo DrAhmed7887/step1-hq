@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   APP_BACKUP_VERSION,
   BACKUP_META_STORAGE_KEY,
@@ -28,6 +28,7 @@ import {
   usePersistentState,
   useStorageJson
 } from "../lib/persistence";
+import { TUTOR_HISTORY_STORAGE_KEY } from "../lib/tutor";
 import {
   WAR_ROOM_STORAGE_KEY,
   createWarRoomState,
@@ -83,6 +84,14 @@ export default function SettingsPage() {
   const [pendingRestore, setPendingRestore] = useState(null);
   const [backupStatus, setBackupStatus] = useState({ tone: "text-mist", message: "" });
   const [syncStatus, setSyncStatus] = useState({ tone: "text-mist", message: "" });
+  const [tutorApiKeyDraft, setTutorApiKeyDraft] = useState(
+    warRoomState.tutorSettings?.apiKey || ""
+  );
+  const [tutorStatus, setTutorStatus] = useState({ tone: "text-mist", message: "" });
+
+  useEffect(() => {
+    setTutorApiKeyDraft(warRoomState.tutorSettings?.apiKey || "");
+  }, [warRoomState.tutorSettings?.apiKey]);
 
   function handleExport() {
     const payload = createCombinedBackup({
@@ -226,11 +235,26 @@ export default function SettingsPage() {
       WAR_ROOM_STORAGE_KEY,
       CLOUD_SYNC_SETTINGS_KEY,
       BACKUP_META_STORAGE_KEY,
+      TUTOR_HISTORY_STORAGE_KEY,
       "s1wr-v2",
       "s1wr-resources-v1"
     ].forEach((key) => window.localStorage.removeItem(key));
 
     window.location.reload();
+  }
+
+  function saveTutorKey() {
+    setWarRoomState((current) => ({
+      ...current,
+      tutorSettings: {
+        ...current.tutorSettings,
+        apiKey: tutorApiKeyDraft.trim()
+      }
+    }));
+    setTutorStatus({
+      tone: tutorApiKeyDraft.trim() ? "text-teal" : "text-mist",
+      message: tutorApiKeyDraft.trim() ? "Gemini key saved locally." : "Gemini key cleared."
+    });
   }
 
   return (
@@ -450,6 +474,42 @@ export default function SettingsPage() {
             </div>
           </section>
         </div>
+
+        <section className="panel p-5 sm:p-6">
+          <p className="war-display text-xs uppercase tracking-[0.24em] text-teal">
+            AI Tutor Configuration
+          </p>
+          <p className="mt-2 text-2xl font-bold text-white">Gemini access</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-mist">
+            Stored locally on this device only. The tutor button appears on the Plan screen once a key is set.
+          </p>
+
+          <div className="mt-5 grid gap-4 xl:grid-cols-[1fr,auto] xl:items-end">
+            <div>
+              <label className="mb-1 block text-xs uppercase text-mist" htmlFor="tutor-api-key">
+                Gemini API Key
+              </label>
+              <input
+                id="tutor-api-key"
+                type="password"
+                className="field"
+                value={tutorApiKeyDraft}
+                onChange={(event) => setTutorApiKeyDraft(event.target.value)}
+                placeholder="AIza..."
+              />
+            </div>
+            <button type="button" className="button-primary" onClick={saveTutorKey}>
+              Save Key
+            </button>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-line bg-white/5 p-4 text-sm text-slate-300">
+            <p>Local only. Never sent to the app servers.</p>
+            {tutorStatus.message ? (
+              <p className={`mt-2 ${tutorStatus.tone}`}>{tutorStatus.message}</p>
+            ) : null}
+          </div>
+        </section>
 
         <section className="panel p-5 sm:p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-coral">Data</p>

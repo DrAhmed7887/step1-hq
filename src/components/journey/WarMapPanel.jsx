@@ -112,8 +112,10 @@ export default function WarMapPanel({
     <Card glow>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-amber">War Map</p>
-          <h2 className="mt-2 text-2xl font-bold text-white">March to September, laid out week by week.</h2>
+          <p className="war-display text-xs uppercase tracking-[0.24em] text-amber">War Map</p>
+          <h2 className="war-display mt-2 text-2xl font-bold text-white">
+            March to September, laid out week by week.
+          </h2>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-mist">
             One path, four threads, and only real work. Quiet weeks stay visible. Active weeks keep the line lit.
           </p>
@@ -205,6 +207,9 @@ export default function WarMapPanel({
                     stroke={THREAD_COLORS[track.id]}
                     strokeWidth="3"
                     strokeLinecap="round"
+                    strokeDasharray={
+                      node.status === "completed" && next.status === "completed" ? undefined : "8 10"
+                    }
                     opacity={active ? 0.95 : 0.14}
                   />
                 );
@@ -218,7 +223,7 @@ export default function WarMapPanel({
                   x={node.x}
                   y="42"
                   textAnchor="middle"
-                  className="fill-slate-500 text-[12px] uppercase tracking-[0.3em]"
+                  className="war-display fill-slate-500 text-[12px] uppercase tracking-[0.3em]"
                 >
                   {node.monthLabel}
                 </text>
@@ -227,6 +232,15 @@ export default function WarMapPanel({
 
             {nodes.map((node) => (
               <g key={node.id} transform={`translate(${node.x} ${node.y})`}>
+                {node.status === "current" ? (
+                  <circle
+                    r="18"
+                    fill="none"
+                    stroke="rgba(34,211,238,0.45)"
+                    strokeWidth="2"
+                    className="animate-radar-pulse"
+                  />
+                ) : null}
                 <circle
                   r={node.status === "current" ? 12 : 10}
                   fill={weekNodeFill(node)}
@@ -262,12 +276,17 @@ export default function WarMapPanel({
 
               return (
                 <g key={milestone.id} transform={`translate(${anchor.x} ${anchor.y + yOffset})`}>
-                  <circle
-                    r="16"
+                  <rect
+                    x="-14"
+                    y="-14"
+                    width="28"
+                    height="28"
+                    rx="4"
                     fill={milestone.complete ? THREAD_COLORS[milestone.trackId] : "#111827"}
                     stroke={milestone.complete ? "#d7fff7" : "#475569"}
                     strokeWidth="2"
                     opacity={milestone.complete ? 1 : 0.85}
+                    transform="rotate(45)"
                   />
                   <text
                     y="4"

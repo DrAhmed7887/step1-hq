@@ -1,3 +1,5 @@
+import { getUWorldCompletionPct } from "./resourceProgress.js";
+
 export const ENERGY_OPTIONS = [
   { value: "low", label: "Low" },
   { value: "medium", label: "Medium" },
@@ -90,7 +92,7 @@ export function milestoneHint(milestone, warRoomState) {
     case "first-nbme":
       return "Log the first NBME in War Room.";
     case "uworld-50":
-      return `${Math.round((Number(warRoomState.totalQuestions || 0) / 3400) * 100)}% of UWorld logged`;
+      return `${Math.round(getUWorldCompletionPct(warRoomState))}% of UWorld logged`;
     case "usmle-exam-day":
       return `Exam date: ${warRoomState.examDate}`;
     default:
@@ -100,31 +102,66 @@ export function milestoneHint(milestone, warRoomState) {
 
 export function buildGreeting(date = new Date()) {
   const hour = date.getHours();
+  const seed = date.getDate() % 3;
+  const greetings = {
+    earlyMorning: [
+      "0500 hours. The base is quiet. Let's move.",
+      "Early bird gets the pass. Coffee up, Doctor.",
+      "Dawn patrol. Your competition is still asleep."
+    ],
+    morning: [
+      "Morning briefing. What's the mission today?",
+      "Good morning, Doctor. Rocky's already done his run.",
+      "Training block open. Time to execute."
+    ],
+    afternoon: [
+      "Afternoon push. Stay in the fight.",
+      "Half the day deployed. Keep the pressure.",
+      "The grind continues. Round by round."
+    ],
+    evening: [
+      "Evening session. Quality over quantity now.",
+      "Night shift operations. Controlled bursts only.",
+      "The gym is quieter at night. Focus is sharper."
+    ],
+    lateNight: [
+      "Late night grind? Protect the essentials.",
+      "After hours. The only enemy left is fatigue.",
+      "Midnight oil. Know when to stand down, soldier."
+    ]
+  };
 
-  if (hour >= 5 && hour < 12) {
+  if (hour >= 4 && hour < 7) {
     return {
-      title: "Good morning, Doctor.",
-      tone: "Your calmest hour matters most. Start before the day starts negotiating."
+      title: greetings.earlyMorning[seed],
+      tone: "Quiet hours are clean reps. Start before the noise gets a vote."
     };
   }
 
-  if (hour >= 12 && hour < 18) {
+  if (hour >= 7 && hour < 12) {
     return {
-      title: "Good afternoon, Doctor.",
-      tone: "Reset the line. A strong middle of the day can still carry the whole plan."
+      title: greetings.morning[seed],
+      tone: "Lock the first block early and the rest of the day gets easier."
     };
   }
 
-  if (hour >= 18 && hour < 23) {
+  if (hour >= 12 && hour < 17) {
     return {
-      title: "Good evening, Doctor.",
-      tone: "Keep the room quiet, keep the task list small, and make the next hour count."
+      title: greetings.afternoon[seed],
+      tone: "A hard middle stretch still wins the day if the next move is clean."
+    };
+  }
+
+  if (hour >= 17 && hour < 21) {
+    return {
+      title: greetings.evening[seed],
+      tone: "Protect the quality of the reps. No fake volume."
     };
   }
 
   return {
-    title: "Late night grind?",
-    tone: "Protect the essentials. Precision beats forcing one more tired block."
+    title: greetings.lateNight[seed],
+    tone: "Precision beats forcing one more tired block."
   };
 }
 

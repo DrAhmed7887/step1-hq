@@ -5,7 +5,12 @@ import scheduleData from "../data/scheduleTemplates.json" with { type: "json" };
 import studyPlanTemplates from "../data/studyPlanTemplates.json" with { type: "json" };
 import { eventsForDate } from "./commandCenter.js";
 import { getNextResource } from "./resourceMap.js";
-import { TOTAL_UWORLD, calculateAccuracy, todayKey } from "./warRoom.js";
+import {
+  getFirstAidCompletedUnits,
+  getUWorldCompletedUnits,
+  TOTAL_UWORLD
+} from "./resourceProgress.js";
+import { calculateAccuracy, todayKey } from "./warRoom.js";
 
 export const ENERGY_LEVELS = {
   LOW: "low",
@@ -369,6 +374,12 @@ function calculateSectionFaPagesCompleted(userState = {}, sectionId = "", topics
 }
 
 function calculateFaPagesCompleted(userState = {}, topics = [], sections = []) {
+  const trackedPages = getFirstAidCompletedUnits(userState);
+
+  if (trackedPages > 0) {
+    return trackedPages;
+  }
+
   if (typeof userState.faPagesCompleted === "number") {
     return Math.max(0, userState.faPagesCompleted);
   }
@@ -563,15 +574,16 @@ function buildRuleMetrics(userState = {}, currentWeek, referenceDate = new Date(
   return {
     current_week: currentWeek,
     weeks_until_exam: weeksUntilExam,
-    uworld_percent_complete: Math.round(
-      (Math.max(0, Number(userState.totalQuestions || 0)) / TOTAL_UWORLD) * 100
-    ),
+    uworld_percent_complete: Math.round((getUWorldCompletedUnits(userState) / TOTAL_UWORLD) * 100),
     active_resources_count: Array.isArray(userState.activeResources)
       ? userState.activeResources.length
       : 0,
     days_since_last_nbme: latestNbme?.date ? daysBetween(latestNbme.date, dateOnly(referenceDate)) : 999,
     anki_new_cards_per_day: Math.max(0, Number(userState.ankiNewCardsPerDay || 0)),
-    fa_pages_completed: Math.max(0, Number(userState.faPagesCompleted || 0))
+    fa_pages_completed: Math.max(
+      0,
+      Number(userState.faPagesCompleted || getFirstAidCompletedUnits(userState) || 0)
+    )
   };
 }
 
@@ -941,6 +953,8 @@ function computeWeeksAgo(dateKeyValue, referenceDate = new Date()) {
 }
 
 export function checkExamReadiness(userState = {}, referenceDate = new Date()) {
+  const uworldCompletedUnits = getUWorldCompletedUnits(userState);
+  const uworldPercentComplete = Math.round((uworldCompletedUnits / TOTAL_UWORLD) * 100);
   const recentNBMEs = getNbmeAssessments(userState)
     .map((nbme) => ({
       ...nbme,
@@ -979,12 +993,19 @@ export function checkExamReadiness(userState = {}, referenceDate = new Date()) {
     message = "Scores in low 60s. Consider 1-2 more weeks of targeted remediation.";
   }
 
+  if (uworldCompletedUnits > 0 && uworldPercentComplete < 50) {
+    status = "Unsafe";
+    message =
+      "UWorld completion is still under 50%. Build more question-bank reps before trusting the readiness signal.";
+  }
+
   return {
     status,
     message,
     tone: READINESS_TONES[status],
     reasons: [
       `Recent NBME average: ${Math.round(avgScore)}%.`,
+      `UWorld completion: ${uworldPercentComplete}%.`,
       allAbove60
         ? "Every recent NBME cleared 60%."
         : "At least one recent NBME is still under 60%.",

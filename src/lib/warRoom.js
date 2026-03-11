@@ -1,8 +1,13 @@
 import { readStorageJson } from "./persistence.js";
+import {
+  createDefaultResourceProgress,
+  hydrateResourceProgress,
+  TOTAL_UWORLD
+} from "./resourceProgress.js";
 
 export const WAR_ROOM_STORAGE_KEY = "s1wr-v3";
 const LEGACY_WAR_ROOM_STORAGE_KEY = "s1wr-v2";
-export const TOTAL_UWORLD = 3400;
+export { TOTAL_UWORLD };
 export const DEFAULT_EXAM_DATE = "2026-08-15";
 
 export const ERROR_TAXONOMY = [
@@ -101,6 +106,12 @@ export function createSystemProgress(sections) {
   }, {});
 }
 
+function createTutorSettings() {
+  return {
+    apiKey: ""
+  };
+}
+
 export function createWarRoomState(sections) {
   return {
     examDate: DEFAULT_EXAM_DATE,
@@ -119,6 +130,8 @@ export function createWarRoomState(sections) {
     nbmeAnalyses: [],
     fatigueEntries: [],
     completedResources: [],
+    resourceProgress: createDefaultResourceProgress(),
+    tutorSettings: createTutorSettings(),
     aiSettings: {
       mode: "client",
       endpoint: "https://api.anthropic.com/v1/messages",
@@ -166,6 +179,11 @@ export function mergeWarRoomState(saved, sections) {
       ...(saved.dailyPlan || {})
     },
     systemProgress: mergeSystemProgress(saved.systemProgress, defaults.systemProgress),
+    resourceProgress: hydrateResourceProgress(saved.resourceProgress, saved),
+    tutorSettings: {
+      ...defaults.tutorSettings,
+      ...(saved.tutorSettings || {})
+    },
     aiSettings: {
       ...defaults.aiSettings,
       ...(saved.aiSettings || {})

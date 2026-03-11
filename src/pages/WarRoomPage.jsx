@@ -41,10 +41,12 @@ import {
 import { generateCoachingPlan, resolveDailyCoachInputs } from "../lib/coachingEngine";
 import { createCombinedBackup, normalizeImportedBackup } from "../lib/appBackup";
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
+import DrillBoard from "../components/plan/DrillBoard";
 import WarMapPanel from "../components/journey/WarMapPanel";
 import Card from "../components/ui/Card";
 import { THREAD_COLORS } from "../lib/journey";
 import { getLatestMomentum, getNewMilestones } from "../lib/journey";
+import { getTrackedResourceEntry } from "../lib/resourceProgress";
 import {
   WAR_ROOM_STORAGE_KEY,
   ERROR_TAXONOMY,
@@ -69,7 +71,7 @@ const TAB_IDS = tabs.map((entry) => entry.id);
 function StatCard({ label, value, accent, hint }) {
   return (
     <div className="panel-soft p-4">
-      <p className="text-xs uppercase tracking-[0.2em] text-mist">{label}</p>
+      <p className="war-display text-xs uppercase tracking-[0.22em] text-mist">{label}</p>
       <div className="mt-2 flex items-end justify-between gap-3">
         <p className={`font-mono text-3xl font-bold ${accent}`}>{value}</p>
         {hint ? <p className="text-xs text-slate-400">{hint}</p> : null}
@@ -493,9 +495,10 @@ export default function WarRoomPage() {
 
   useEffect(() => {
     const requestedTab = searchParams.get("tab");
+    const normalizedTab = requestedTab && TAB_IDS.includes(requestedTab) ? requestedTab : "hq";
 
-    if (requestedTab && TAB_IDS.includes(requestedTab) && requestedTab !== tab) {
-      setTab(requestedTab);
+    if (normalizedTab !== tab) {
+      setTab(normalizedTab);
     }
   }, [searchParams, tab]);
 
@@ -539,7 +542,6 @@ export default function WarRoomPage() {
   }, [commandCenterSnapshot, state, state.assessments, state.examDate, state.totalQuestions, today]);
 
   function updateActiveTab(nextTab) {
-    setTab(nextTab);
     const nextParams = new URLSearchParams(searchParams);
 
     if (nextTab === "hq") {
@@ -763,6 +765,7 @@ export default function WarRoomPage() {
     const epc = Math.max(0, Number(assessmentDraft.epc) || 0);
     const id = crypto.randomUUID();
     const isFree120 = assessmentDraft.label === "Free120";
+    const nbmeEntry = getTrackedResourceEntry(state, "nbme");
     const record = {
       id,
       kind: isFree120 ? "Free120" : "NBME",
@@ -777,7 +780,17 @@ export default function WarRoomPage() {
       assessments: [
         ...state.assessments,
         record
-      ]
+      ],
+      resourceProgress: isFree120
+        ? state.resourceProgress
+        : {
+            ...state.resourceProgress,
+            nbme: {
+              ...nbmeEntry,
+              completedUnits: nbmeEntry.completedUnits + 1,
+              lastUpdated: new Date().toISOString()
+            }
+          }
     });
     if (!isFree120) {
       setNbmeView("analysis");
@@ -1543,6 +1556,10 @@ Critically review the MCQ:
           </Card>
         </div>
 
+        <Card variant="success">
+          <DrillBoard warRoomState={state} readOnly />
+        </Card>
+
         <Card variant="calm">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -2082,7 +2099,7 @@ Critically review the MCQ:
   );
 
   return (
-    <div className="space-y-6">
+    <div className="war-room-bg space-y-6">
       <MilestoneCelebration
         milestone={celebration}
         soundEnabled={Boolean(commandCenterSnapshot.settings?.celebrationSoundEnabled)}
@@ -2097,7 +2114,7 @@ Critically review the MCQ:
               <p className="text-xs uppercase tracking-[0.24em] text-mist">Study intelligence</p>
             </div>
             <div className="space-y-3">
-              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+              <h1 className="war-display text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
                 Make the next study move feel obvious.
               </h1>
               <p className="max-w-3xl text-base leading-7 text-slate-200">
