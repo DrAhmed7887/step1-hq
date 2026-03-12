@@ -13,7 +13,10 @@ const DATABASE_TITLES = {
   schedule: "🗓️ Master Schedule",
   subjects: "📚 Study Stack — Systems Command",
   weakTopics: "🔥 Weak Topics Queue",
-  practiceExams: "🎯 NBME Tracker"
+  practiceExams: "🎯 NBME Tracker",
+  researchLog: "📝 Research Log",
+  tasks: "📋 Task List",
+  quickCapture: "⚡ Quick Capture"
 };
 
 const DATABASE_ENV_KEYS = {
@@ -21,7 +24,10 @@ const DATABASE_ENV_KEYS = {
   schedule: "NOTION_MASTER_SCHEDULE_DB_ID",
   subjects: "NOTION_SUBJECTS_DB_ID",
   weakTopics: "NOTION_WEAK_TOPICS_DB_ID",
-  practiceExams: "NOTION_PRACTICE_EXAMS_DB_ID"
+  practiceExams: "NOTION_PRACTICE_EXAMS_DB_ID",
+  researchLog: "NOTION_RESEARCH_LOG_DB_ID",
+  tasks: "NOTION_TASKS_DB_ID",
+  quickCapture: "NOTION_QUICK_CAPTURE_DB_ID"
 };
 
 const SYSTEM_NAME_OVERRIDES = {
@@ -37,6 +43,8 @@ const SYSTEM_NAME_OVERRIDES = {
 };
 
 const databaseIdCache = new Map();
+const databaseSchemaCache = new Map();
+const TEXT_CHUNK_SIZE = 1800;
 
 function runtimeEnv() {
   if (globalThis.__NOTION_ENV__) {
@@ -180,15 +188,133 @@ function formulaValue(page, propertyName) {
   return "";
 }
 
+function titlePropertyName(properties, fallback = "Title") {
+  const entry = Object.entries(properties || {}).find(([, value]) => value.type === "title");
+  return entry?.[0] || fallback;
+}
+
+function buildRichTextChunks(content = "", chunkSize = TEXT_CHUNK_SIZE) {
+  const text = String(content || "");
+
+  if (!text.trim()) {
+    return [];
+  }
+
+  const chunks = [];
+
+  for (let index = 0; index < text.length; index += chunkSize) {
+    chunks.push({
+      type: "text",
+      text: {
+        content: text.slice(index, index + chunkSize)
+      }
+    });
+  }
+
+  return chunks;
+}
+
+function paragraphBlock(content) {
+  return {
+    object: "block",
+    type: "paragraph",
+    paragraph: {
+      rich_text: buildRichTextChunks(content)
+    }
+  };
+}
+
+function bulletedBlock(content) {
+  return {
+    object: "block",
+    type: "bulleted_list_item",
+    bulleted_list_item: {
+      rich_text: buildRichTextChunks(content)
+    }
+  };
+}
+
+export function markdownToBlocks(markdown = "") {
+  const lines = String(markdown || "").split(/\r?\n/);
+  const blocks = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+
+    if (!line.trim()) {
+      continue;
+    }
+
+    if (line.startsWith("### ")) {
+      blocks.push({
+        object: "block",
+        type: "heading_3",
+        heading_3: { rich_text: buildRichTextChunks(line.slice(4).trim()) }
+      });
+      continue;
+    }
+
+    if (line.startsWith("## ")) {
+      blocks.push({
+        object: "block",
+        type: "heading_2",
+        heading_2: { rich_text: buildRichTextChunks(line.slice(3).trim()) }
+      });
+      continue;
+    }
+
+    if (line.startsWith("# ")) {
+      blocks.push({
+        object: "block",
+        type: "heading_1",
+        heading_1: { rich_text: buildRichTextChunks(line.slice(2).trim()) }
+      });
+      continue;
+    }
+
+    if (line.startsWith("- [ ] ")) {
+      blocks.push({
+        object: "block",
+        type: "to_do",
+        to_do: {
+          rich_text: buildRichTextChunks(line.slice(6).trim()),
+          checked: false
+        }
+      });
+      continue;
+    }
+
+    if (line.startsWith("- ")) {
+      blocks.push(bulletedBlock(line.slice(2).trim()));
+      continue;
+    }
+
+    blocks.push(paragraphBlock(line));
+  }
+
+  return blocks.length ? blocks : [paragraphBlock(markdown || "No content provided.")];
+}
+
+async function databaseSchema(databaseId) {
+  if (databaseSchemaCache.has(databaseId)) {
+    return databaseSchemaCache.get(databaseId);
+  }
+
+  const schema = await notionClient().databases.retrieve({
+    database_id: databaseId
+  });
+
+  databaseSchemaCache.set(databaseId, schema);
+  return schema;
+}
+
 async function findDatabaseByTitle(client, title) {
-  const query = title.replace(/^[^A-Za-z0-9]+/u, "").trim() || title;
   const results = [];
   let startCursor;
 
   while (true) {
-    const response = await client.search({
-      query,
-      filter: { property: "object", value: "database" },
+    const response = await client.blocks.children.list({
+      block_id: parentPageId(),
       page_size: 100,
       ...(startCursor ? { start_cursor: startCursor } : {})
     });
@@ -202,28 +328,16 @@ async function findDatabaseByTitle(client, title) {
     startCursor = response.next_cursor;
   }
 
-  for (const result of results) {
-    if (plainText(result.title) !== title) {
-      continue;
-    }
+  const databaseBlock = results.find(
+    (result) => result.type === "child_database" && result.child_database?.title === title
+  );
 
-    if (result.parent?.type !== "page_id") {
-      continue;
-    }
-
-    if (result.parent.page_id !== parentPageId()) {
-      continue;
-    }
-
-    return result.id;
-  }
-
-  return null;
+  return databaseBlock?.id || null;
 }
 
 export async function resolveDataSourceId(key) {
   const envKey = DATABASE_ENV_KEYS[key];
-  const envValue = envKey ? process.env[envKey] : "";
+  const envValue = envKey ? readEnv(envKey) : "";
 
   if (envValue) {
     return envValue;
@@ -251,13 +365,13 @@ export async function resolveDataSourceId(key) {
 
 export async function queryDataSourcePages(key) {
   const client = notionClient();
-  const databaseId = await resolveDataSourceId(key);
+  const dataSourceId = await resolveDataSourceId(key);
   const results = [];
   let startCursor;
 
   while (true) {
     const response = await client.databases.query({
-      database_id: databaseId,
+      database_id: dataSourceId,
       page_size: 100,
       ...(startCursor ? { start_cursor: startCursor } : {})
     });
@@ -304,6 +418,32 @@ export async function listWeakTopics() {
 export async function listPracticeExams() {
   return (await queryDataSourcePages("practiceExams"))
     .map(mapPracticeExam)
+    .sort((left, right) => right.date.localeCompare(left.date));
+}
+
+export async function listResearchEntries() {
+  return (await queryDataSourcePages("researchLog"))
+    .map((page) => ({
+      id: page.id,
+      title: titleValue(page, "Title"),
+      source: selectValue(page, "Source"),
+      track: selectValue(page, "Track"),
+      status: selectValue(page, "Status"),
+      date: dateValue(page, "Date"),
+      summary: richTextValue(page, "Summary")
+    }))
+    .sort((left, right) => right.date.localeCompare(left.date));
+}
+
+export async function listQuickCaptureEntries() {
+  return (await queryDataSourcePages("quickCapture"))
+    .map((page) => ({
+      id: page.id,
+      title: titleValue(page, "Title"),
+      source: selectValue(page, "Source"),
+      processed: checkboxValue(page, "Processed"),
+      date: page.properties?.Date?.created_time || page.created_time || ""
+    }))
     .sort((left, right) => right.date.localeCompare(left.date));
 }
 
@@ -461,9 +601,9 @@ export async function updateResourceEntry(payload) {
 
 export async function createWeakTopicEntry(payload) {
   const client = notionClient();
-  const databaseId = await resolveDataSourceId("weakTopics");
+  const dataSourceId = await resolveDataSourceId("weakTopics");
   const page = await client.pages.create({
-    parent: { database_id: databaseId },
+    parent: { database_id: dataSourceId },
     properties: {
       Topic: {
         title: [
@@ -547,9 +687,9 @@ export async function upsertPracticeExamEntry(payload) {
     return mapPracticeExam(updated);
   }
 
-  const databaseId = await resolveDataSourceId("practiceExams");
+  const dataSourceId = await resolveDataSourceId("practiceExams");
   const created = await client.pages.create({
-    parent: { database_id: databaseId },
+    parent: { database_id: dataSourceId },
     properties: {
       Form: {
         title: [
@@ -566,6 +706,139 @@ export async function upsertPracticeExamEntry(payload) {
   });
 
   return mapPracticeExam(created);
+}
+
+export async function createTaskEntry(payload) {
+  const client = notionClient();
+  const dataSourceId = await resolveDataSourceId("tasks");
+  const schema = await databaseSchema(dataSourceId);
+  const titleKey = titlePropertyName(schema.properties, "Task");
+  const statusType = schema.properties?.Status?.type || "select";
+
+  const page = await client.pages.create({
+    parent: { database_id: dataSourceId },
+    properties: {
+      [titleKey]: {
+        title: [
+          {
+            text: {
+              content: payload.title || "Untitled task"
+            }
+          }
+        ]
+      },
+      ...(payload.track ? { Track: { select: { name: payload.track } } } : {}),
+      ...(payload.dueDate ? { "Due Date": { date: { start: payload.dueDate } } } : {}),
+      ...(payload.timeEstimate
+        ? { "Time Estimate": { select: { name: payload.timeEstimate } } }
+        : {}),
+      ...(payload.priority ? { Priority: { select: { name: payload.priority } } } : {}),
+      ...(payload.calendarSynced != null ? { "Calendar Synced": { checkbox: Boolean(payload.calendarSynced) } } : {}),
+      ...(payload.sourceResearchId
+        ? { "Source Research": { relation: [{ id: payload.sourceResearchId }] } }
+        : {}),
+      ...(statusType === "status"
+        ? { Status: { status: { name: payload.status || "To Do" } } }
+        : { Status: { select: { name: payload.status || "To Do" } } })
+    }
+  });
+
+  return {
+    id: page.id,
+    title: payload.title || "Untitled task"
+  };
+}
+
+export async function createResearchEntry(payload) {
+  const client = notionClient();
+  const dataSourceId = await resolveDataSourceId("researchLog");
+  const schema = await databaseSchema(dataSourceId);
+  const titleKey = titlePropertyName(schema.properties, "Title");
+  const page = await client.pages.create({
+    parent: { database_id: dataSourceId },
+    properties: {
+      [titleKey]: {
+        title: [
+          {
+            text: {
+              content: payload.title || "Untitled research"
+            }
+          }
+        ]
+      },
+      ...(payload.source ? { Source: { select: { name: payload.source } } } : {}),
+      ...(payload.track ? { Track: { select: { name: payload.track } } } : {}),
+      ...(payload.date ? { Date: { date: { start: payload.date } } } : {}),
+      ...(payload.status ? { Status: { select: { name: payload.status } } } : {}),
+      ...(payload.tags?.length
+        ? { Tags: { multi_select: payload.tags.map((name) => ({ name })) } }
+        : {}),
+      ...(payload.summary
+        ? {
+            Summary: {
+              rich_text: buildRichTextChunks(payload.summary)
+            }
+          }
+        : {})
+    },
+    children: markdownToBlocks(payload.content)
+  });
+
+  return {
+    id: page.id,
+    title: payload.title || "Untitled research"
+  };
+}
+
+export async function linkResearchTasks(researchPageId, taskIds) {
+  if (!taskIds?.length) {
+    return;
+  }
+
+  const client = notionClient();
+  await client.pages.update({
+    page_id: researchPageId,
+    properties: {
+      "Related Tasks": {
+        relation: taskIds.map((id) => ({ id }))
+      }
+    }
+  });
+}
+
+export async function createQuickCaptureEntry(payload) {
+  const client = notionClient();
+  const dataSourceId = await resolveDataSourceId("quickCapture");
+  const schema = await databaseSchema(dataSourceId);
+  const titleKey = titlePropertyName(schema.properties, "Title");
+  const page = await client.pages.create({
+    parent: { database_id: dataSourceId },
+    properties: {
+      [titleKey]: {
+        title: [
+          {
+            text: {
+              content: payload.title || "Untitled capture"
+            }
+          }
+        ]
+      },
+      ...(payload.content
+        ? {
+            Content: {
+              rich_text: buildRichTextChunks(payload.content)
+            }
+          }
+        : {}),
+      ...(payload.source ? { Source: { select: { name: payload.source } } } : {}),
+      ...(payload.processed != null ? { Processed: { checkbox: Boolean(payload.processed) } } : {})
+    }
+  });
+
+  return {
+    id: page.id,
+    title: payload.title || "Untitled capture"
+  };
 }
 
 export async function runJsonRoute(request, response, allowedMethods, handler) {
