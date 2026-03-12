@@ -98,6 +98,7 @@ export default {
 
       return jsonResponse({ error: "Route not found." }, { status: 404, origin });
     } catch (error) {
+      console.error("Notion worker error", error?.stack || error);
       return jsonResponse(
         { error: error.message || "Notion request failed." },
         { status: 500, origin }

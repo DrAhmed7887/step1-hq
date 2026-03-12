@@ -2,7 +2,6 @@ import notionSdk from "@notionhq/client";
 
 const {
   Client,
-  collectPaginatedAPI,
   isFullPage
 } = notionSdk;
 
@@ -68,7 +67,12 @@ function notionClient() {
     throw new Error("NOTION_TOKEN is not configured on the server.");
   }
 
-  return new Client({ auth: token });
+  const runtimeFetch = (...args) => globalThis.fetch(...args);
+
+  return new Client({
+    auth: token,
+    fetch: runtimeFetch
+  });
 }
 
 function parentPageId() {
@@ -178,11 +182,25 @@ function formulaValue(page, propertyName) {
 
 async function findDatabaseByTitle(client, title) {
   const query = title.replace(/^[^A-Za-z0-9]+/u, "").trim() || title;
-  const results = await collectPaginatedAPI(client.search, {
-    query,
-    filter: { property: "object", value: "database" },
-    page_size: 100
-  });
+  const results = [];
+  let startCursor;
+
+  while (true) {
+    const response = await client.search({
+      query,
+      filter: { property: "object", value: "database" },
+      page_size: 100,
+      ...(startCursor ? { start_cursor: startCursor } : {})
+    });
+
+    results.push(...response.results);
+
+    if (!response.has_more || !response.next_cursor) {
+      break;
+    }
+
+    startCursor = response.next_cursor;
+  }
 
   for (const result of results) {
     if (plainText(result.title) !== title) {
@@ -234,10 +252,24 @@ export async function resolveDataSourceId(key) {
 export async function queryDataSourcePages(key) {
   const client = notionClient();
   const databaseId = await resolveDataSourceId(key);
-  const results = await collectPaginatedAPI(client.databases.query, {
-    database_id: databaseId,
-    page_size: 100
-  });
+  const results = [];
+  let startCursor;
+
+  while (true) {
+    const response = await client.databases.query({
+      database_id: databaseId,
+      page_size: 100,
+      ...(startCursor ? { start_cursor: startCursor } : {})
+    });
+
+    results.push(...response.results);
+
+    if (!response.has_more || !response.next_cursor) {
+      break;
+    }
+
+    startCursor = response.next_cursor;
+  }
 
   return results.filter(isFullPage);
 }
