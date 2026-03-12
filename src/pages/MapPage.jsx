@@ -22,6 +22,7 @@ import {
   hydrateWarRoomState,
   todayKey
 } from "../lib/warRoom";
+import { useNotionCache, useNotionStatus } from "../lib/notionSync";
 
 export default function MapPage() {
   const [commandCenterState, setCommandCenterState] = usePersistentState(
@@ -34,6 +35,8 @@ export default function MapPage() {
     () => createWarRoomState(sections),
     (saved) => hydrateWarRoomState(saved, sections)
   );
+  const notionCache = useNotionCache();
+  const notionStatus = useNotionStatus();
   const [celebration, setCelebration] = useState(null);
   const today = todayKey();
   const latestMomentum = getLatestMomentum(commandCenterState.checkIns || {});
@@ -113,6 +116,51 @@ export default function MapPage() {
         momentum={latestMomentum}
         allowGrowthLog={false}
       />
+
+      <Card>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-teal">Systems Command</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Notion subject progress</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-mist">
+              The systems layer now reads from the Study Stack database so the map stays tied to live completion data.
+            </p>
+          </div>
+          <p className="text-sm text-mist">{notionStatus.message}</p>
+        </div>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {notionCache.subjects.length ? (
+            notionCache.subjects.map((subject) => (
+              <article key={subject.id} className="rounded-3xl border border-line bg-white/5 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">{subject.system}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-mist">
+                      {subject.phase} · {subject.status}
+                    </p>
+                  </div>
+                  <span className="font-mono text-teal">{subject.progressPct}%</span>
+                </div>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-teal to-coral"
+                    style={{ width: `${subject.progressPct}%` }}
+                  />
+                </div>
+                <div className="mt-4 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
+                  <p>FA: {subject.faDone}/{subject.faTotal}</p>
+                  <p>UWorld: {subject.uwDone}/{subject.uwTotal}</p>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-3xl border border-dashed border-line p-5 text-sm text-mist sm:col-span-2 xl:col-span-3">
+              No Notion subject data yet. The local map still works offline, and the live system cards will appear once the Notion proxy responds.
+            </div>
+          )}
+        </div>
+      </Card>
 
       <Card variant="warning">
         <div className="flex flex-wrap items-start justify-between gap-4">

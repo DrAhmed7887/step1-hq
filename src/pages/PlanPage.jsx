@@ -27,6 +27,7 @@ import {
   sortOpenTodos
 } from "../lib/dailyFlow";
 import { getLatestMomentum, THREAD_COLORS } from "../lib/journey";
+import { useNotionCache, useNotionStatus } from "../lib/notionSync";
 import { usePersistentState, useStorageJson } from "../lib/persistence";
 import {
   createResourceProgressPatch,
@@ -68,6 +69,8 @@ export default function PlanPage() {
     createCloudSyncSettings,
     hydrateCloudSyncSettings
   );
+  const notionCache = useNotionCache();
+  const notionStatus = useNotionStatus();
 
   const today = todayKey();
   const todayCheckIn = commandCenterState.checkIns[today] || null;
@@ -78,6 +81,11 @@ export default function PlanPage() {
   const todaysEvents = eventsForDate(commandCenterState.events || [], today);
   const topThree = sortOpenTodos(commandCenterState.todos || []).slice(0, 3);
   const latestMomentum = todayCheckIn?.momentum ?? getLatestMomentum(commandCenterState.checkIns);
+  const notionToday = notionCache.schedule.today;
+  const notionUpcoming = notionCache.schedule.upcoming.slice(0, 4);
+  const notionResources = [...notionCache.resources]
+    .sort((left, right) => right.progressPct - left.progressPct)
+    .slice(0, 4);
   const [reflectionDraft, setReflectionDraft] = useState("");
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [growthLogOpen, setGrowthLogOpen] = useState(false);
@@ -303,6 +311,73 @@ export default function PlanPage() {
           </div>
         </div>
       </section>
+
+      <Card className="space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-teal">Notion Plan Feed</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Schedule and resource layer.</h2>
+          </div>
+          <p className="text-sm text-mist">{notionStatus.message}</p>
+        </div>
+
+        <div className="grid gap-5 xl:grid-cols-[1.05fr,0.95fr]">
+          <div className="rounded-3xl border border-line bg-white/5 p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Today from Notion</p>
+            {notionToday ? (
+              <div className="mt-3 space-y-2">
+                <p className="text-lg font-semibold text-white">
+                  {notionToday.system} · {notionToday.label}
+                </p>
+                <p className="text-sm text-slate-300">{notionToday.tasks}</p>
+                <p className="text-xs text-slate-400">
+                  {notionToday.date} · {notionToday.phase} · {notionToday.faPages}
+                </p>
+              </div>
+            ) : (
+              <p className="mt-3 text-sm text-mist">No live schedule entry available yet.</p>
+            )}
+
+            {notionUpcoming.length ? (
+              <div className="mt-5 space-y-2">
+                {notionUpcoming.map((entry) => (
+                  <div key={entry.id} className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-white">{entry.system}</p>
+                      <span className="text-xs text-slate-400">{entry.date}</span>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-300">{entry.label}</p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="rounded-3xl border border-line bg-white/5 p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Live resource progress</p>
+            <div className="mt-3 space-y-3">
+              {notionResources.length ? (
+                notionResources.map((resource) => (
+                  <div key={resource.id}>
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <p className="font-semibold text-white">{resource.name}</p>
+                      <span className="font-mono text-teal">{resource.progressPct}%</span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-teal via-amber to-coral"
+                        style={{ width: `${resource.progressPct}%` }}
+                      />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-mist">Resource sync will appear here once the Notion proxy responds.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </Card>
 
       <div className="grid gap-6 xl:grid-cols-[1.08fr,0.92fr]">
         <Card glow className="space-y-5">

@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useNotionStatus } from "../../lib/notionSync";
 
 function HomeIcon() {
   return (
@@ -74,8 +75,34 @@ function NavTab({ to, label, icon: Icon }) {
 }
 
 export default function BottomNav() {
+  const notionStatus = useNotionStatus();
+  const statusTone = notionStatus.connected
+    ? "border-teal/30 bg-teal/10 text-teal"
+    : notionStatus.state === "syncing"
+      ? "border-amber/30 bg-amber/10 text-amber"
+      : "border-white/10 bg-slate-950/80 text-mist";
+  const statusLabel = notionStatus.connected
+    ? "Notion live"
+    : notionStatus.state === "syncing"
+      ? "Syncing"
+      : "Offline";
+
   return (
-    <nav className="bottom-nav-shell" aria-label="Primary navigation">
+    <nav className="bottom-nav-shell relative" aria-label="Primary navigation">
+      <div className="pointer-events-none absolute -top-10 right-4 z-10">
+        <div className={`flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] ${statusTone}`}>
+          <span
+            className={`h-2 w-2 rounded-full ${
+              notionStatus.connected
+                ? "bg-teal"
+                : notionStatus.state === "syncing"
+                  ? "bg-amber"
+                  : "bg-coral"
+            }`}
+          />
+          <span>{statusLabel}</span>
+        </div>
+      </div>
       <div className="bottom-nav">
         <NavTab to="/" label="Home" icon={HomeIcon} />
         <NavTab to="/plan" label="Plan" icon={PlanIcon} />

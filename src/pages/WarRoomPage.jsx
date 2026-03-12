@@ -46,6 +46,13 @@ import WarMapPanel from "../components/journey/WarMapPanel";
 import Card from "../components/ui/Card";
 import { THREAD_COLORS } from "../lib/journey";
 import { getLatestMomentum, getNewMilestones } from "../lib/journey";
+import {
+  useNotionCache,
+  useNotionStatus,
+  syncNotionPracticeExam,
+  syncNotionResourceProgress,
+  syncNotionWeakTopic
+} from "../lib/notionSync";
 import { getTrackedResourceEntry } from "../lib/resourceProgress";
 import {
   WAR_ROOM_STORAGE_KEY,
@@ -251,6 +258,72 @@ function forecastSubline(forecast) {
   return "Based on UW avg, NBME, FA progress";
 }
 
+function normalizePracticeExamLabel(label) {
+  return label === "Free120" ? "Free 120 (New)" : label;
+}
+
+function weightedReadinessSignal(exams) {
+  const recent = [...(exams || [])]
+    .filter((exam) => Number(exam.score) > 0)
+    .sort((left, right) => left.date.localeCompare(right.date))
+    .slice(-3)
+    .reverse();
+
+  if (!recent.length) {
+    return {
+      label: "Need Data",
+      tone: "text-mist",
+      value: null,
+      guidance: "Log at least one NBME in Notion to unlock the weighted signal.",
+      recent
+    };
+  }
+
+  const weights = [0.5, 0.3, 0.2];
+  const weightedAverage = recent.reduce(
+    (sum, exam, index) => sum + Number(exam.score || 0) * (weights[index] || 0),
+    0
+  );
+
+  if (weightedAverage >= 70) {
+    return {
+      label: "GO",
+      tone: "text-teal",
+      value: weightedAverage,
+      guidance: "Schedule the exam.",
+      recent
+    };
+  }
+
+  if (weightedAverage >= 65) {
+    return {
+      label: "CAUTION",
+      tone: "text-amber",
+      value: weightedAverage,
+      guidance: "One more NBME would tighten the signal.",
+      recent
+    };
+  }
+
+  if (weightedAverage >= 60) {
+    return {
+      label: "BORDERLINE",
+      tone: "text-coral",
+      value: weightedAverage,
+      guidance: "Focus on weak systems before scheduling.",
+      recent
+    };
+  }
+
+  return {
+    label: "RE-TRAIN",
+    tone: "text-coral",
+    value: weightedAverage,
+    guidance: "Extend the timeline if needed and rebuild the fundamentals.",
+    recent
+  };
+}
+
 const CHECK_IN_HOUR_OPTIONS = [
   { value: "0", label: "0" },
   { value: "0.5", label: "0.5" },
@@ -315,6 +388,8 @@ export default function WarRoomPage() {
     createCloudSyncSettings,
     hydrateCloudSyncSettings
   );
+  const notionCache = useNotionCache();
+  const notionStatus = useNotionStatus();
   const [tab, setTab] = useState(() => {
     const requestedTab = searchParams.get("tab");
     return TAB_IDS.includes(requestedTab) ? requestedTab : "hq";
@@ -390,6 +465,10 @@ export default function WarRoomPage() {
     [state.fatigueEntries]
   );
   const nbmeChartData = useMemo(() => buildNbmeChartData(state.assessments), [state.assessments]);
+  const notionWeightedReadiness = useMemo(
+    () => weightedReadinessSignal(notionCache.practiceExams),
+    [notionCache.practiceExams]
+  );
   const nbmeAssessments = useMemo(
     () =>
       [...state.assessments]
@@ -684,6 +763,12 @@ export default function WarRoomPage() {
       streak: calculateStreak(nextLogs)
     });
 
+    void syncNotionResourceProgress({
+      resourceName: "UWorld (1st Pass)",
+      completed: nextTotals.totalQuestions,
+      status: "Active"
+    }).catch(() => {});
+
     setBulkRows([createEmptyBulkRow()]);
   }
 
@@ -758,6 +843,15 @@ export default function WarRoomPage() {
       note: "",
       qids: ""
     }));
+
+    void syncNotionWeakTopic({
+      topic: problemDraft.topicTitle,
+      system: sections.find((entry) => entry.id === topic?.sectionId)?.name || "",
+      source: "UWorld Incorrect",
+      priority: "🟡 Important",
+      actionPlan: problemDraft.note || `Review missed concept from ${problemDraft.source}.`,
+      dateAdded: problemDraft.date
+    }).catch(() => {});
   }
 
   function addAssessment(event) {
@@ -811,6 +905,14 @@ export default function WarRoomPage() {
       epc: "",
       notes: ""
     }));
+
+    void syncNotionPracticeExam({
+      testName: normalizePracticeExamLabel(record.label),
+      date: record.date,
+      score: record.epc,
+      totalQuestions: isFree120 ? 120 : 200,
+      notes: record.notes
+    }).catch(() => {});
   }
 
   function updateKnowledgeGapRow(rowId, field, value) {
@@ -1555,6 +1657,56 @@ Critically review the MCQ:
             </div>
           </Card>
         </div>
+
+        <Card variant="calm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-teal">5. Notion Weighted Readiness</p>
+              <h2 className={`mt-3 text-3xl font-bold ${notionWeightedReadiness.tone}`}>
+                {notionWeightedReadiness.label}
+              </h2>
+              <p className="mt-2 text-sm text-slate-300">{notionWeightedReadiness.guidance}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs uppercase tracking-[0.18em] text-mist">Connection</p>
+              <p className={`mt-2 text-sm font-semibold ${notionStatus.connected ? "text-teal" : "text-mist"}`}>
+                {notionStatus.message}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-[0.9fr,1.1fr]">
+            <div className="rounded-2xl border border-line bg-white/5 p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Weighted average</p>
+              <p className="mt-3 text-4xl font-bold text-white">
+                {Number.isFinite(notionWeightedReadiness.value)
+                  ? `${Math.round(notionWeightedReadiness.value)}%`
+                  : "--"}
+              </p>
+              <p className="mt-2 text-sm text-slate-400">
+                Formula: most recent × 0.5, second × 0.3, third × 0.2.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-line bg-white/5 p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Recent practice exams from Notion</p>
+              <div className="mt-3 space-y-2">
+                {notionWeightedReadiness.recent.length ? (
+                  notionWeightedReadiness.recent.map((exam) => (
+                    <div key={exam.id} className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 px-3 py-2">
+                      <div>
+                        <p className="text-sm font-semibold text-white">{exam.testName}</p>
+                        <p className="text-xs text-slate-400">{exam.date || "No date logged"}</p>
+                      </div>
+                      <span className="font-mono text-teal">{exam.score}%</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-mist">No Notion practice exams with scores yet.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </Card>
 
         <Card variant="success">
           <DrillBoard warRoomState={state} readOnly />

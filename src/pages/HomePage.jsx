@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import avatarAttack from "../assets/ninja/avatar-attack.png";
-import avatarExhausted from "../assets/ninja/avatar-exhausted.png";
-import avatarReady from "../assets/ninja/avatar-ready.png";
+import avatarAttack from "../assets/doc/attack.png";
+import avatarExhausted from "../assets/doc/exhausted.png";
+import avatarReady from "../assets/doc/ready.png";
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import MomentumMeter from "../components/journey/MomentumMeter";
 import Logo from "../components/Logo";
@@ -31,6 +31,7 @@ import {
   resolveQuoteCategory,
   resolveSessionType
 } from "../lib/journey";
+import { useNotionCache, useNotionStatus } from "../lib/notionSync";
 import { usePersistentState, useStorageJson, writeStorageJson } from "../lib/persistence";
 import {
   WAR_ROOM_STORAGE_KEY,
@@ -57,6 +58,8 @@ export default function HomePage() {
     () => createWarRoomState(sections),
     (saved) => hydrateWarRoomState(saved, sections)
   );
+  const notionCache = useNotionCache();
+  const notionStatus = useNotionStatus();
 
   const today = todayKey();
   const todayCheckIn = state.checkIns[today] || null;
@@ -194,7 +197,7 @@ export default function HomePage() {
   const lastCheckIn = getMostRecentCheckIn(state.checkIns, today);
   const greeting = buildGreeting(new Date());
   const heroQuote = todaysQuote || {
-    text: "One step at a time. One punch at a time.",
+    text: "One step at a time. One punch at a time. One round at a time.",
     source: "Rocky Balboa"
   };
   const stanceLabel = todayCheckIn
@@ -202,6 +205,11 @@ export default function HomePage() {
     : lastCheckIn
       ? `Last stance: ${lastCheckIn.date} · ${lastCheckIn.hours}h`
       : "No stance locked yet.";
+  const upcomingTask = notionCache.schedule.today || notionCache.schedule.upcoming[0] || null;
+  const openWeakTopics = notionCache.weakTopics.filter((topic) => !topic.reviewed).length;
+  const liveResources = [...notionCache.resources]
+    .sort((left, right) => right.progressPct - left.progressPct)
+    .slice(0, 3);
 
   return (
     <div className="page-stagger space-y-4">
@@ -241,8 +249,8 @@ export default function HomePage() {
             <div className="rounded-[22px] border border-white/10 bg-black/20 p-2">
               <img
                 src={avatarSource}
-                alt="Daily avatar"
-                className="h-14 w-14 pixelated sm:h-16 sm:w-16"
+                alt="The Doc avatar"
+                className="h-14 w-14 rounded-[14px] object-cover sm:h-16 sm:w-16"
                 data-avatar-pose={avatarPose}
               />
             </div>
@@ -255,6 +263,70 @@ export default function HomePage() {
         label={`Day ${Object.keys(state.checkIns || {}).length || 1} · ${Math.round(latestMomentum * 100)}% momentum`}
         compact
       />
+
+      <Card className="mx-auto w-full max-w-5xl space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-teal">Notion Pulse</p>
+            <h2 className="mt-2 text-2xl font-bold text-white">Live command summary.</h2>
+          </div>
+          <p className="text-sm text-mist">
+            {notionStatus.message}
+            {notionStatus.lastSyncedAt
+              ? ` · ${new Date(notionStatus.lastSyncedAt).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "2-digit"
+                })}`
+              : ""}
+          </p>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-4">
+          <div className="panel-soft p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Next task</p>
+            <p className="mt-2 text-sm font-semibold text-white">
+              {upcomingTask?.system || "Plan sync pending"}
+            </p>
+            <p className="mt-2 text-xs text-slate-300">
+              {upcomingTask?.date ? `${upcomingTask.date} · ${upcomingTask.label}` : "Notion schedule will show up here once synced."}
+            </p>
+          </div>
+          <div className="panel-soft p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Weak topics</p>
+            <p className="mt-2 text-3xl font-bold text-coral">{openWeakTopics}</p>
+            <p className="mt-2 text-xs text-slate-300">Open flags waiting for review.</p>
+          </div>
+          <div className="panel-soft p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Resources live</p>
+            <p className="mt-2 text-3xl font-bold text-teal">{notionCache.resources.length}</p>
+            <p className="mt-2 text-xs text-slate-300">Tracked directly from Notion.</p>
+          </div>
+          <div className="panel-soft p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Practice exams</p>
+            <p className="mt-2 text-3xl font-bold text-amber">{notionCache.practiceExams.length}</p>
+            <p className="mt-2 text-xs text-slate-300">NBME / Free 120 entries synced.</p>
+          </div>
+        </div>
+
+        {liveResources.length ? (
+          <div className="grid gap-3 md:grid-cols-3">
+            {liveResources.map((resource) => (
+              <div key={resource.id} className="rounded-2xl border border-line bg-white/5 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-white">{resource.name}</p>
+                  <span className="font-mono text-xs text-teal">{resource.progressPct}%</span>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-teal to-coral"
+                    style={{ width: `${resource.progressPct}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </Card>
 
       <p className="px-2 text-center text-xs uppercase tracking-[0.18em] text-mist">
         Current stance: {stanceLabel}

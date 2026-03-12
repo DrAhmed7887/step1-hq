@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import BottomNav from "./components/navigation/BottomNav";
+import { refreshNotionCache } from "./lib/notionSync";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const PlanPage = lazy(() => import("./pages/PlanPage"));
@@ -10,6 +11,27 @@ const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const ResourcesPage = lazy(() => import("./pages/ResourcesPage"));
 
 function Layout({ children }) {
+  useEffect(() => {
+    let active = true;
+
+    function runSync() {
+      return refreshNotionCache().catch(() => {});
+    }
+
+    void runSync();
+
+    const intervalId = window.setInterval(() => {
+      if (active) {
+        void runSync();
+      }
+    }, 180000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
   return (
     <div className="app-shell">
       <div className="ambient-orb ambient-orb-one" />
