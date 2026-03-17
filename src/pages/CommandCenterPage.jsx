@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import avatarAttack from "../assets/ninja/avatar-attack.png";
-import avatarExhausted from "../assets/ninja/avatar-exhausted.png";
-import avatarReady from "../assets/ninja/avatar-ready.png";
+import avatarAttack from "../assets/doc/attack.png";
+import avatarExhausted from "../assets/doc/exhausted.png";
+import avatarReady from "../assets/doc/ready.png";
 import MilestoneCelebration from "../components/journey/MilestoneCelebration";
 import MomentumMeter from "../components/journey/MomentumMeter";
 import Card from "../components/ui/Card";
@@ -519,8 +519,8 @@ export default function CommandCenterPage() {
                 <div className="rounded-[20px] border border-white/10 bg-black/20 p-3">
                   <img
                     src={avatarSource}
-                    alt="Daily avatar"
-                    className="h-16 w-16 pixelated"
+                    alt="The Doc avatar"
+                    className="h-16 w-16 rounded-[16px] object-cover"
                     data-avatar-pose={avatarPose}
                   />
                 </div>
