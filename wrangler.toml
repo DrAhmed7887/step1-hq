@@ -1,4 +1,4 @@
-name = "step1-hq-api"
+name = "step1-hq"
 main = "api/notion/worker.js"
 compatibility_date = "2026-03-12"
 compatibility_flags = ["nodejs_compat"]
