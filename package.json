@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:smoke": "npm run build && node --test tests/smoke/smoke.test.mjs"
+    "test:smoke": "npm run build && node --test tests/smoke/smoke.test.mjs",
+    "sync:google": "node scripts/sync-google-from-backup.js",
+    "sync:study-queue": "node scripts/sync-study-queue.js"
   },
   "dependencies": {
     "@notionhq/client": "^4.0.1",
