@@ -34,6 +34,7 @@ import {
   getRemainingUnits,
   getTrackedResourceEntry
 } from "../lib/resourceProgress";
+import { getSystemStudyQueue } from "../lib/resourceMap";
 import {
   WAR_ROOM_STORAGE_KEY,
   createWarRoomState,
@@ -278,6 +279,9 @@ export default function PlanPage() {
     String(task.title || "").toLowerCase().includes("passive option")
   );
   const completedResources = warRoomState.completedResources || [];
+  const activeSectionId = todaysCoachPlan.focus?.primary?.section?.id || "";
+  const activeSectionName = todaysCoachPlan.focus?.primary?.section?.name || "Mixed review";
+  const studyQueue = getSystemStudyQueue(activeSectionId, completedResources);
 
   return (
     <div className="page-stagger space-y-6">
@@ -456,6 +460,65 @@ export default function PlanPage() {
                 todaysCoachPlan.nextBestMove?.gates?.[0]?.message ||
                 "Check in on Home to regenerate the day."}
             </p>
+          </Card>
+
+          <Card className="p-4 sm:p-5">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-mist">Watchlist</p>
+            <div className="mt-2 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-white">Videos and UWorld blocks</h2>
+                <p className="mt-1 text-sm text-slate-300">
+                  {activeSectionName} · watch the next video series, then move into the question blocks.
+                </p>
+              </div>
+              <span className="pill border-white/10 text-white/80">{studyQueue.videos.length} videos</span>
+            </div>
+
+            <div className="mt-4 space-y-4">
+              {studyQueue.videoSeries.length ? (
+                studyQueue.videoSeries.map((seriesGroup) => (
+                  <div key={seriesGroup.series}>
+                    <p className="text-xs uppercase tracking-[0.16em] text-teal">{seriesGroup.series}</p>
+                    <div className="mt-2 space-y-2">
+                      {seriesGroup.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-2"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <p className="text-sm font-semibold text-white">{item.title}</p>
+                            <span className="text-xs text-slate-400">{item.durationMinutes} min</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-mist">No remaining video items for this system.</p>
+              )}
+
+              {studyQueue.questionSeries.length ? (
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-amber">UWorld</p>
+                  <div className="mt-2 space-y-2">
+                    {studyQueue.questionSeries[0].items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-2xl border border-white/10 bg-slate-950/40 px-3 py-2"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-sm font-semibold text-white">{item.title}</p>
+                          <span className="text-xs text-slate-400">{item.durationMinutes} min</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-mist">No remaining UWorld blocks for this system.</p>
+              )}
+            </div>
           </Card>
 
           <Card className="p-4 sm:p-5">

@@ -127,3 +127,70 @@ export function getNextResource(systemId, completedResourceIds = []) {
 
   return null; // All core resources for this system are completed
 }
+
+function inferSeriesLabel(resourceTitle = "") {
+  const lower = String(resourceTitle).toLowerCase();
+
+  if (lower.includes("bootcamp")) {
+    return "Bootcamp";
+  }
+
+  if (lower.includes("boards & beyond") || lower.includes("board and beyond") || lower.includes("b&b")) {
+    return "Boards & Beyond";
+  }
+
+  if (lower.includes("pathoma")) {
+    return "Pathoma";
+  }
+
+  if (lower.includes("sketchy")) {
+    return "Sketchy";
+  }
+
+  if (lower.includes("uworld")) {
+    return "UWorld";
+  }
+
+  return "Other";
+}
+
+function toQueueItem(resource) {
+  return {
+    ...resource,
+    series: inferSeriesLabel(resource.title)
+  };
+}
+
+export function getSystemStudyQueue(systemId, completedResourceIds = []) {
+  const pathway = SYSTEM_RESOURCES[systemId] || [];
+  const remaining = pathway.filter((resource) => !completedResourceIds.includes(resource.id));
+  const videoItems = remaining.filter((resource) => resource.type === "video").map(toQueueItem);
+  const questionItems = remaining
+    .filter((resource) => resource.type === "questions")
+    .map(toQueueItem);
+  const readingItems = remaining
+    .filter((resource) => resource.type === "reading")
+    .map(toQueueItem);
+
+  const videoSeries = ["Bootcamp", "Boards & Beyond", "Pathoma", "Sketchy", "Other"]
+    .map((series) => ({
+      series,
+      items: videoItems.filter((item) => item.series === series)
+    }))
+    .filter((entry) => entry.items.length > 0);
+
+  return {
+    systemId,
+    systemName: systemId || "Mixed review",
+    remaining,
+    videos: videoItems,
+    questionBlocks: questionItems,
+    readings: readingItems,
+    videoSeries,
+    questionSeries: questionItems.length
+      ? [{ series: "UWorld", items: questionItems }]
+      : [],
+    nextVideo: videoItems[0] || null,
+    nextQuestionBlock: questionItems[0] || null
+  };
+}
